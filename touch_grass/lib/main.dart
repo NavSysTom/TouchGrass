@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
               icon: Icon(Icons.arrow_forward),
-              label: Text('Go to Signup Page'),
+              label: Text('Go to Signup Page which is singup.dart'),
             ),
           ],
         ),

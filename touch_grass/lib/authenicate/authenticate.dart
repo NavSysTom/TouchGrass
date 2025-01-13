@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:touch_grass/authenicate/register.dart';
 
 
 class Authenticate extends StatefulWidget {
@@ -10,7 +11,7 @@ class _AuthenticateState extends State<Authenticate> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Text('authenticate'),
+      child: Register(),
     );
   }
 }
