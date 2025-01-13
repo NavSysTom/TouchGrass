@@ -1,8 +1,12 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'screens/signup.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -72,11 +76,11 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SecondPage()),
+                    MaterialPageRoute(builder: (context) => Signup()),
                 );
               },
               icon: Icon(Icons.arrow_forward),
-              label: Text('Go to Second Page'),
+              label: Text('Go to Signup Page'),
             ),
           ],
         ),
@@ -105,17 +109,4 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class SecondPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Second Page'),
-        backgroundColor: Color(0xFFbfd37a),
-      ),
-      body: Center(
-        child: Text('Welcome to the Second Page!'),
-      ),
-    );
-  }
-}
+
