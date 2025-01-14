@@ -1,7 +1,7 @@
-import 'package:touch_grass/screens/homeUI.dart';
 import 'package:touch_grass/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:touch_grass/authenicate/register.dart';
+import 'package:touch_grass/screens/homeUI.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -50,22 +50,22 @@ class _SignupState extends State<Signup> {
                     contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
                   ),
                   obscureText: true,
-                  validator: (val) => val!.length < 6 ? 'Enter a password atleast 6+ characters long' : null,
+                  validator: (val) => val!.length < 6 ? 'Enter a password at least 6+ characters long' : null,
                   onChanged: (val) {
-                  setState(() => password = val);
-                },
+                    setState(() => password = val);
+                  },
                 ),
                 const SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () async {
-                    if (_formKey.currentState!.validate()){
+                    if (_formKey.currentState!.validate()) {
                       dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                      if (result == null){
+                      if (result == null) {
                         setState(() {
-                          error = 'Incorrect Sign In, Please Try Again';
+                          error = 'Incorrect Password/Email, Please Try Again';
                         });
-                      } else{
-                        Navigator.push(
+                      } else {
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomeUI()),
                         );
@@ -73,6 +73,11 @@ class _SignupState extends State<Signup> {
                     }
                   },
                   child: const Text('Log In'),
+                ),
+                const SizedBox(height: 20.0),
+                Text(
+                  error,
+                  style: const TextStyle(color: Colors.red, fontSize: 14.0),
                 ),
                 const SizedBox(height: 20.0),
                 ElevatedButton(
