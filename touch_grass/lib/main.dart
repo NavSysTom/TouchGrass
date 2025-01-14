@@ -2,7 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:touch_grass/screens/homeUI.dart';
 import 'screens/signup.dart';
+import 'package:touch_grass/services/auth.dart';
+import 'package:touch_grass/models/myUser.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +19,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(),
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
+    return StreamProvider<myUser?>.value(
+      initialData: null,
+      value: AuthService().user,
+      child: MaterialApp(
+        home: Wrapper(),
       ),
     );
+  }
+}
+
+class Wrapper extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = Provider.of<myUser?>(context);
+
+   
+    if (user == null) {
+      return HomePage();
+    } else {
+      return HomeUI();
+    }
   }
 }
 
@@ -44,10 +63,29 @@ class _HomePageState extends State<HomePage> {
               fontWeight: FontWeight.bold,
               color: Colors.white,
               fontFamily: 'HelveticaNeueRoman',
+              
             ),
           ),
         ),
+        centerTitle: true,
         backgroundColor: Color(0xFFbfd37a),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Signup()),
+              );
+            },
+            child: Text(
+              'Log In',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -71,16 +109,6 @@ class _HomePageState extends State<HomePage> {
               },
               icon: Icon(Icons.photo),
               label: Text('Pick Image from Gallery'),
-            ),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                    MaterialPageRoute(builder: (context) => Signup()),
-                );
-              },
-              icon: Icon(Icons.arrow_forward),
-              label: Text('Go to Signup Page which is singup.dart'),
             ),
           ],
         ),
@@ -108,5 +136,3 @@ class _HomePageState extends State<HomePage> {
     }
   }
 }
-
-
