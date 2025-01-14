@@ -2,5 +2,5 @@ class myUser {
 
   final String? uid;
 
-  myUser({this.uid});
+  myUser({required this.uid});
 }
