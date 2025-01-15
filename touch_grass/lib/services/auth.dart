@@ -10,9 +10,8 @@ class AuthService {
   }
 
   // Auth change user stream
- Stream<myUser?> get user {
-    return _auth.authStateChanges()
-        .map((User? user) => _userFromFirebaseUser(user));
+  Stream<myUser?> get user {
+    return _auth.authStateChanges().map(_userFromFirebaseUser);
   }
 
   // Sign in with email and password
@@ -40,7 +39,7 @@ class AuthService {
   }
 
   // Sign out
-  Future signOut() async {
+  Future<void> signOut() async {
     try {
       return await _auth.signOut();
     } catch (e) {

@@ -1,6 +1,6 @@
+import 'package:touch_grass/screens/signup.dart';
 import 'package:touch_grass/services/auth.dart';
 import 'package:flutter/material.dart';
-import 'package:touch_grass/screens/signup.dart'; // Import the Signin page
 
 class Register extends StatefulWidget {
   @override
@@ -18,24 +18,31 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register Account'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFbfd37a),
-      ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 60.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 60.0),
+                Text(
+                  'Register',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 40.0),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Email',
-                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    prefixIcon: Icon(Icons.email),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                   validator: (val) => val!.isEmpty ? 'Enter an email' : null,
                   onChanged: (val) {
@@ -44,9 +51,13 @@ class _RegisterState extends State<Register> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Password',
-                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    prefixIcon: Icon(Icons.lock),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                   obscureText: true,
                   validator: (val) => val!.length < 6 ? 'Enter a password at least 6+ characters long' : null,
@@ -54,34 +65,72 @@ class _RegisterState extends State<Register> {
                     setState(() => password = val);
                   },
                 ),
-                const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      dynamic result = await _auth.registerWithEmailAndPassword(email, password);
-                      if (result == null) {
-                        setState(() {
-                          error = 'Please supply a valid email';
-                        });
-                      }
-                    }
-                  },
-                  child: const Text('Register'),
-                ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 Text(
-                  error,
-                  style: const TextStyle(color: Colors.red, fontSize: 14.0),
+                  'Password must be at least 6 characters long',
+                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
                 const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Signup()),
-                    );
-                  },
-                  child: const Text('Already have an account? Log In'),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF4CAF50), // Green color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+                        if (result == null) {
+                          setState(() {
+                            error = 'Please supply a valid email';
+                          });
+                        } else {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => Signup())
+                            );
+                        }
+                      }
+                    },
+                    child: const Text('Register'),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Center(
+                  child: Text(
+                    error,
+                    style: const TextStyle(color: Colors.red, fontSize: 14.0),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Already have an account?",
+                        style: TextStyle(fontSize: 14.0),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Signup()),
+                          );
+                        },
+                        child: Text(
+                          'Sign in now',
+                          style: TextStyle(
+                            color: Colors.lightGreen,
+                            fontSize: 14.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
