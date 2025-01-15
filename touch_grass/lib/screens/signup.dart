@@ -1,7 +1,7 @@
+import 'package:touch_grass/screens/homeUI.dart';
 import 'package:touch_grass/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:touch_grass/authenicate/register.dart';
-import 'package:touch_grass/screens/homeUI.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -19,24 +19,31 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFbfd37a),
-      ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 60.0),
+          padding: const EdgeInsets.symmetric(horizontal: 40.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 60.0),
+                Text(
+                  'Signup',
+                  style: TextStyle(
+                    fontSize: 32.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 40.0),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Email',
-                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    prefixIcon: Icon(Icons.email),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                   validator: (val) => val!.isEmpty ? 'Enter an email' : null,
                   onChanged: (val) {
@@ -45,9 +52,13 @@ class _SignupState extends State<Signup> {
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Password',
-                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+                    prefixIcon: Icon(Icons.lock),
+                    contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
                   ),
                   obscureText: true,
                   validator: (val) => val!.length < 6 ? 'Enter a password at least 6+ characters long' : null,
@@ -55,39 +66,73 @@ class _SignupState extends State<Signup> {
                     setState(() => password = val);
                   },
                 ),
-                const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      dynamic result = await _auth.signInWithEmailAndPassword(email, password);
-                      if (result == null) {
-                        setState(() {
-                          error = 'Incorrect Password/Email, Please Try Again';
-                        });
-                      } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => HomeUI()),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('Log In'),
-                ),
-                const SizedBox(height: 20.0),
+                const SizedBox(height: 10.0),
                 Text(
-                  error,
-                  style: const TextStyle(color: Colors.red, fontSize: 14.0),
+                  'Password must be at least 6 characters long',
+                  style: TextStyle(fontSize: 12.0, color: Colors.grey),
                 ),
                 const SizedBox(height: 20.0),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Register()),
-                    );
-                  },
-                  child: const Text('Don\'t have an account? Register'),
+                Center(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF4CAF50), // Green color
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 30.0),
+                    ),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        dynamic result = await _auth.signInWithEmailAndPassword(email, password);
+                        if (result == null) {
+                          setState(() {
+                            error = 'Incorrect Sign In, Please Try Again';
+                          });
+                        } else {
+                          // Navigate to HomeUI after successful login
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeUI()),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('Log In'),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Center(
+                  child: Text(
+                    error,
+                    style: const TextStyle(color: Colors.red, fontSize: 14.0),
+                  ),
+                ),
+                const SizedBox(height: 20.0),
+                Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Don't have an account?",
+                        style: TextStyle(fontSize: 14.0),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Register()),
+                          );
+                        },
+                        child: Text(
+                          'Register here',
+                          style: TextStyle(
+                            color: Colors.lightGreen,
+                            fontSize: 14.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
