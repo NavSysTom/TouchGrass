@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:touch_grass/authenticate/auth_cubit.dart';
 import 'package:touch_grass/components/drawer.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,15 +16,6 @@ class _HomePageState extends State<HomePage> {
         title: Text('Welcome to Touch Grass'),
         centerTitle: true,
         backgroundColor: Color(0xFFbfd37a),
-
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthCubit>().signOut();
-            },
-          ),
-        ],
       ),
       drawer: const MyDrawer(),
     );

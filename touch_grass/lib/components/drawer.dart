@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:touch_grass/authenticate/auth_cubit.dart';
 import 'package:touch_grass/authenticate/home/pages/profile_page.dart';
 import 'package:touch_grass/components/drawer_tile.dart';
 
@@ -33,9 +35,13 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.person,
                 onTap: () {
                 Navigator.of(context).pop();
+
+                final user = context.read<AuthCubit>().currentUser;
+                String? uid = user!.uid;
+
                 Navigator.push(
                   context, MaterialPageRoute(
-                    builder: (context) => ProfilePage()
+                    builder: (context) => ProfilePage(uid: uid)
                     ),
                   );
                 }
@@ -55,9 +61,7 @@ class MyDrawer extends StatelessWidget {
               MyDrawerTile(
                 title: 'Logout',
                 icon: Icons.logout,
-                onTap: () {
-                  
-                },
+                onTap: () => context.read<AuthCubit>().signOut(),
               ),
             ]
           ),
