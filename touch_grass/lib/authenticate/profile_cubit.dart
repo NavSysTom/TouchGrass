@@ -2,20 +2,18 @@ import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/profile_state.dart';
+import 'package:touch_grass/components/profile_user.dart';
 import 'package:touch_grass/services/profile_repo.dart';
 import 'package:touch_grass/storage/storage_repo.dart';
 
-
-class ProfileCubit extends Cubit<ProfileState>{
+class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepo profileRepo;
   final StorageRepo storageRepo;
 
-  ProfileCubit(
-    {
-      required this.profileRepo,
-      required this.storageRepo,
-
-      }) : super(ProfileInitial());
+  ProfileCubit({
+    required this.profileRepo,
+    required this.storageRepo,
+  }) : super(ProfileInitial());
 
   Future<void> fetchUserProfile(String uid) async {
     try {
@@ -32,12 +30,15 @@ class ProfileCubit extends Cubit<ProfileState>{
     }
   }
 
+  Future<ProfileUser?> getuserProfile(String uid) async {
+    final user = await profileRepo.fetchUserProfile(uid);
+  }
+
   Future<void> updatedProfile({
     required String uid,
     String? newBio,
     Uint8List? imageWebBytes,
     String? imageMobilePath,
-  
   }) async {
     emit(ProfileLoading());
 
@@ -51,14 +52,16 @@ class ProfileCubit extends Cubit<ProfileState>{
 
       String? imageDownloadUrl;
 
-      if (imageWebBytes != null || imageMobilePath != null){
-        if(imageMobilePath != null){
-          imageDownloadUrl = await storageRepo.uploadProfileImage(imageMobilePath, uid);
-        } else if (imageWebBytes != null){
-          imageDownloadUrl = await storageRepo.uploadProfileImageWeb(imageWebBytes, uid);
+      if (imageWebBytes != null || imageMobilePath != null) {
+        if (imageMobilePath != null) {
+          imageDownloadUrl =
+              await storageRepo.uploadProfileImage(imageMobilePath, uid);
+        } else if (imageWebBytes != null) {
+          imageDownloadUrl =
+              await storageRepo.uploadProfileImageWeb(imageWebBytes, uid);
         }
 
-        if(imageDownloadUrl == null){
+        if (imageDownloadUrl == null) {
           emit(ProfileError('Error uploading image'));
           return;
         }
