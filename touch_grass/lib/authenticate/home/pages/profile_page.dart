@@ -82,18 +82,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const SizedBox(height: 15.0),
 
-              Text("Bio"),
+              const Text("Bio"),
               const SizedBox(height: 30),
               BioBox(text: user.bio),
 
               //posts
-              Padding(padding:
-                const EdgeInsets.all(20.0),
+              const Padding(padding:
+                 EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                    const Text('Posts', style: TextStyle(fontSize: 20.0)),
-                    const SizedBox(height: 20),
-                    const Text('No posts yet..', style: TextStyle(fontSize: 16.0)),
+                     Text('Posts', style: TextStyle(fontSize: 20.0)),
+                     SizedBox(height: 20),
+                     Text('No posts yet..', style: TextStyle(fontSize: 16.0)),
                   ],
                 ), 
               )

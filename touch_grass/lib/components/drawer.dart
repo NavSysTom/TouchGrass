@@ -17,7 +17,7 @@ class MyDrawer extends StatelessWidget {
           child: Column(
             children: [
               
-              Icon(
+              const Icon(
                 Icons.person,
                 size: 100.0,
               ),

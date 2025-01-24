@@ -53,30 +53,31 @@ class _UploadPostPageState extends State<UploadPostPage> {
     }
   }
 
-  void uploadPost() async {
-    if (imagePickedFile == null || textController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Please select an image and write a caption')));
-      return;
-    }
-
-    final newPost = Post(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      userId: currentUser!.uid,
-      username: currentUser!.name,
-      text: textController.text,
-      imageUrl: '',
-      timestamp: DateTime.now(),
-    );
-
-    final PostCubit postCubit = context.read<PostCubit>();
-
-    if (kIsWeb) {
-      postCubit.createPost(newPost, imageWebBytes: imagePickedFile?.bytes);
-    } else {
-      postCubit.createPost(newPost, imageMobilePath: imagePickedFile?.path);
-    }
+void uploadPost() async {
+  if (imagePickedFile == null || textController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please select an image and write a caption')));
+    return;
   }
+
+  final newPost = Post(
+    id: DateTime.now().millisecondsSinceEpoch.toString(),
+    userId: currentUser!.uid,
+    username: currentUser!.name,
+    text: textController.text,
+    imageUrl: '', // This will be updated after the image is uploaded
+    timestamp: DateTime.now(),
+    comments: [],
+  );
+
+  final PostCubit postCubit = context.read<PostCubit>();
+
+  if (kIsWeb) {
+    postCubit.createPost(newPost, imageWebBytes: imagePickedFile?.bytes);
+  } else {
+    postCubit.createPost(newPost, imageMobilePath: imagePickedFile?.path);
+  }
+}
 
   @override
   void dispose() {
@@ -133,13 +134,13 @@ class _UploadPostPageState extends State<UploadPostPage> {
         child: Column(
           children: [
             if (kIsWeb && webImage != null)
-              Container(
+              SizedBox(
                 height: 300,
                 width: 300,
                 child: Image.memory(webImage!, fit: BoxFit.cover),
               ),
             if (!kIsWeb && imagePickedFile != null)
-              Container(
+              SizedBox(
                 height: 300,
                 width: 300,
                 child: Image.file(
