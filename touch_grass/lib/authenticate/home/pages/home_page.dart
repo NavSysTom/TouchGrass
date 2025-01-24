@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:touch_grass/authenticate/home/pages/upload_post_page.dart';
 import 'package:touch_grass/components/drawer.dart';
 import 'package:touch_grass/components/post_tile.dart';
@@ -36,9 +35,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome to Touch Grass'),
+        title: const Text('Welcome to Touch Grass'),
         centerTitle: true,
-        backgroundColor: Color(0xFFbfd37a),
+        backgroundColor: const Color(0xFFbfd37a),
         actions: [
           IconButton(
             onPressed: () => Navigator.push(

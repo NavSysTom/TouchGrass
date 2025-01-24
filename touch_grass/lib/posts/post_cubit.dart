@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:touch_grass/comments/comment.dart';
 import 'package:touch_grass/posts/post.dart';
 import 'package:touch_grass/posts/post_repo.dart';
 import 'package:touch_grass/posts/post_states.dart';
@@ -41,7 +42,7 @@ class PostCubit extends Cubit<PostState> {
     }
   }
 
-  Future<void> fetchAllPosts() async {
+Future<void> fetchAllPosts() async {
     try {
       emit(PostsLoading());
       final posts = await postRepo.fetchAllPosts();
@@ -59,4 +60,25 @@ class PostCubit extends Cubit<PostState> {
       emit(PostsError("Failed to delete post: $e"));
     }
   }
+
+  Future<void> addComment(String postId, Comment comment) async {
+    try {
+      await postRepo.addComment(postId, comment);
+
+      await fetchAllPosts();
+    }
+    catch (e) {
+      emit(PostsError("Failed to add comment $e"));
+    }
+  }
+
+  Future<void> deleteComment (String postId, String commentId) async {
+    try {
+      await postRepo.deleteComment(postId, commentId);
+      await fetchAllPosts();
+    }catch (e) {
+      emit(PostsError("Failed to delete message $e"));
+    }
+  }
 }
+ 

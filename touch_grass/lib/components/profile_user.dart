@@ -6,12 +6,12 @@ class ProfileUser extends AppUser{
     final String profileImageUrl;
 
     ProfileUser({
-      required String uid,
-      required String email,
-      required String name,
+      required super.uid,
+      required super.email,
+      required super.name,
       required this.bio,
       required this.profileImageUrl
-    }) : super(uid: uid, email: email, name: name);
+    });
 
 
     ProfileUser copyWith({
@@ -28,7 +28,8 @@ class ProfileUser extends AppUser{
     }
 
     //covert profile to json
-    Map<String, dynamic> toJson() {
+    @override
+      Map<String, dynamic> toJson() {
       return {
         'uid': uid,
         'email': email,

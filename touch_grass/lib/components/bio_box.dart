@@ -21,7 +21,7 @@ class BioBox extends StatelessWidget {
 
       width: double.infinity,
 
-      child: Text(text.isNotEmpty ? text : 'No bio available..', style: TextStyle(  
+      child: Text(text.isNotEmpty ? text : 'No bio available..', style: const TextStyle(  
         fontSize: 16.0,
         color: Colors.white,
       ),),

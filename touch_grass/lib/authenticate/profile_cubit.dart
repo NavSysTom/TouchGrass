@@ -32,6 +32,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   Future<ProfileUser?> getuserProfile(String uid) async {
     final user = await profileRepo.fetchUserProfile(uid);
+    return user;
   }
 
   Future<void> updatedProfile({
