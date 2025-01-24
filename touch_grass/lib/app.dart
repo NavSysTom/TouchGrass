@@ -1,5 +1,8 @@
+import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/data/firebase_auth.dart';
+import 'package:touch_grass/data/firebase_profile.dart';
 import 'package:touch_grass/screens/auth_page.dart';
+import 'package:touch_grass/storage/firebase_storage_repo.dart';
 import 'authenticate/auth_cubit.dart';
 import 'authenticate/auth_states.dart';
 import 'authenticate/home/pages/home_page.dart';
@@ -10,15 +13,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyApp extends StatelessWidget {
 
-  final AuthServiceRepo = FirebaseAuthRepo();
+  final authRepo = FirebaseAuthRepo();
+  final profileRepo = FirebaseProfileRepo();
+  final storageRepo = FirebaseStorageRepo();
 
 
   MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => AuthCubit(authRepo: AuthServiceRepo)..checkAuth(),
-    child: MaterialApp(
+    return MultiBlocProvider(
+      providers: [
+      BlocProvider<AuthCubit>(
+        create: (context) => AuthCubit(authRepo: authRepo, authServiceRepo: authRepo)..checkAuth(),
+      ),
+      BlocProvider<ProfileCubit>(
+        create: (context) => ProfileCubit(profileRepo: profileRepo, storageRepo: storageRepo),
+      ),
+    ], child: MaterialApp(
       title: 'Touch Grass',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
@@ -31,7 +43,7 @@ class MyApp extends StatelessWidget {
         if(authState is Authenticated){
           return const HomePage();
         } else {
-          return Scaffold(
+          return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
             ), 
