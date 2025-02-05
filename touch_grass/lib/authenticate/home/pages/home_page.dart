@@ -35,18 +35,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Welcome to Touch Grass'),
+        title: const Text('Touch Grass'),
         centerTitle: true,
         backgroundColor: const Color(0xFFbfd37a),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UploadPostPage()),
-            ),
-            icon: const Icon(Icons.add),
-          ),
-        ],
       ),
       drawer: const MyDrawer(),
       body: BlocBuilder<PostCubit, PostState>(
@@ -74,6 +65,14 @@ class _HomePageState extends State<HomePage> {
             return const SizedBox();
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UploadPostPage()),
+        ),
+        backgroundColor: const Color(0xFFbfd37a),
+        child: const Icon(Icons.add),
       ),
     );
   }

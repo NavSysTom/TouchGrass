@@ -12,7 +12,7 @@ import 'package:touch_grass/components/textfield.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileUser user;
-  
+
   const EditProfilePage({super.key, required this.user});
 
   @override
@@ -20,7 +20,6 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-
   PlatformFile? imagePickedFile;
   Uint8List? webImage;
 
@@ -30,7 +29,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.image,
       withData: kIsWeb,
-      );
+    );
 
     if (result != null) {
       setState(() {
@@ -41,27 +40,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
       webImage = imagePickedFile!.bytes;
     }
   }
-  
-void updateProfile() async {
-  final profileCubit = context.read<ProfileCubit>();
-  final String uid = widget.user.uid;
-  final String? imageMobilePath = kIsWeb ? null : imagePickedFile?.path;
-  final Uint8List? imageWebBytes = kIsWeb ? webImage : null;
-  final String? newBio = bioTextController.text.isNotEmpty ? bioTextController.text : null;
 
-  if (imagePickedFile != null || newBio != null) {
-    profileCubit.updatedProfile(
-      uid: uid,
-      newBio: newBio,
-      imageMobilePath: imageMobilePath,
-      imageWebBytes: imageWebBytes,
-    );
-  } else {
-    Navigator.pop(context);
+  void updateProfile() async {
+    final profileCubit = context.read<ProfileCubit>();
+    final String uid = widget.user.uid;
+    final String? imageMobilePath = kIsWeb ? null : imagePickedFile?.path;
+    final Uint8List? imageWebBytes = kIsWeb ? webImage : null;
+    final String? newBio =
+        bioTextController.text.isNotEmpty ? bioTextController.text : null;
+
+    if (imagePickedFile != null || newBio != null) {
+      profileCubit.updatedProfile(
+        uid: uid,
+        newBio: newBio,
+        imageMobilePath: imageMobilePath,
+        imageWebBytes: imageWebBytes,
+      );
+    } else {
+      Navigator.pop(context);
+    }
   }
-}
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<ProfileCubit, ProfileState>(
       builder: (context, state) {
@@ -94,13 +94,8 @@ void updateProfile() async {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        foregroundColor: Colors.black,
-        actions: [
-          IconButton(
-            onPressed: updateProfile,
-            icon: const Icon(Icons.save),
-          ),
-        ],
+        backgroundColor: const Color(0xFFbfd37a),
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -127,9 +122,12 @@ void updateProfile() async {
                           )
                         : CachedNetworkImage(
                             imageUrl: widget.user.profileImageUrl,
-                            placeholder: (context, url) => const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) => const Icon(Icons.error),
-                            imageBuilder: (context, imageProvider) => Image(image: imageProvider),
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.person_2_sharp),
+                            imageBuilder: (context, imageProvider) =>
+                                Image(image: imageProvider),
                           ),
               ),
             ),
@@ -138,18 +136,40 @@ void updateProfile() async {
               child: MaterialButton(
                 onPressed: pickImage,
                 color: Colors.blue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
                 child: const Text('Pick Image'),
               ),
             ),
             const SizedBox(height: 25.0),
             const Text("Bio"),
+            const SizedBox(height: 10.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 9.0),
-              child: MyTextfield(
+              child: TextField(
                 controller: bioTextController,
-                hintText: 'Enter your bio',
-                obscureText: false,
+                decoration: InputDecoration(
+                  hintText: 'Enter your bio',
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 20.0, horizontal: 10.0),
+                ),
+                maxLines: null,
+                textAlign: TextAlign.center,
               ),
+            ),
+            const SizedBox(height: 100.0),
+            ElevatedButton(
+              onPressed: updateProfile,
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              child: const Text('Save'),
             ),
           ],
         ),

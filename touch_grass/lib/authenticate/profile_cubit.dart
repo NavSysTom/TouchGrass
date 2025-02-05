@@ -19,20 +19,18 @@ class ProfileCubit extends Cubit<ProfileState> {
     try {
       emit(ProfileLoading());
       final user = await profileRepo.fetchUserProfile(uid);
-
-      if (user != null) {
-        emit(ProfileLoaded(profileUser: user));
-      } else {
-        emit(ProfileError('User not found'));
-      }
+      emit(ProfileLoaded(profileUser: user));
     } catch (e) {
       emit(ProfileError(e.toString()));
     }
   }
 
   Future<ProfileUser?> getuserProfile(String uid) async {
-    final user = await profileRepo.fetchUserProfile(uid);
-    return user;
+    try {
+      return await profileRepo.fetchUserProfile(uid);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> updatedProfile({
@@ -45,11 +43,6 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     try {
       final currentUser = await profileRepo.fetchUserProfile(uid);
-
-      if (currentUser == null) {
-        emit(ProfileError('User not found'));
-        return;
-      }
 
       String? imageDownloadUrl;
 
@@ -77,6 +70,18 @@ class ProfileCubit extends Cubit<ProfileState> {
       await fetchUserProfile(uid);
     } catch (e) {
       emit(ProfileError("Error updating profile: ${e.toString()}"));
+    }
+  }
+
+  Future<void> toggleFollow(String currentUserId, String targetUserId) async {
+    try {
+      print('Toggling follow for user: $currentUserId -> $targetUserId'); // Debug statement
+      await profileRepo.toggleFollow(currentUserId, targetUserId);
+      print('Follow toggled successfully'); // Debug statement
+      await fetchUserProfile(targetUserId);
+    } catch (e) {
+      print('Error toggling follow: $e'); // Debug statement
+      emit(ProfileError("Error toggling follow: ${e.toString()}"));
     }
   }
 }
