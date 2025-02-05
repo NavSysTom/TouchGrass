@@ -4,6 +4,8 @@ import 'package:touch_grass/data/firebase_profile.dart';
 import 'package:touch_grass/posts/firebase_post_repo.dart';
 import 'package:touch_grass/posts/post_cubit.dart';
 import 'package:touch_grass/screens/auth_page.dart';
+import 'package:touch_grass/search/firebase_search_repo.dart';
+import 'package:touch_grass/search/search_cubit.dart';
 import 'package:touch_grass/storage/firebase_storage_repo.dart';
 import 'authenticate/auth_cubit.dart';
 import 'authenticate/auth_states.dart';
@@ -16,6 +18,7 @@ class MyApp extends StatelessWidget {
   final profileRepo = FirebaseProfileRepo();
   final storageRepo = FirebaseStorageRepo();
   final postRepo = FirebasePostRepo();
+  final searchRepo = FirebaseSearchRepo();
 
   MyApp({super.key});
 
@@ -38,6 +41,10 @@ class MyApp extends StatelessWidget {
           BlocProvider<PostCubit>(
             create: (context) =>
                 PostCubit(postRepo: postRepo, storageRepo: storageRepo),
+          ),
+          BlocProvider<SearchCubit>(
+            create: (context) =>
+                SearchCubit(searchRepo: searchRepo),
           ),
         ],
         child: MaterialApp(

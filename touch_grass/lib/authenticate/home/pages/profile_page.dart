@@ -3,10 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
 import 'package:touch_grass/authenticate/home/pages/edit_profile_page.dart';
+import 'package:touch_grass/authenticate/home/pages/follower_page.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/authenticate/profile_state.dart';
 import 'package:touch_grass/components/bio_box.dart';
+import 'package:touch_grass/components/follow_button.dart';
+import 'package:touch_grass/components/profile_stats.dart';
+import 'package:touch_grass/posts/post_cubit.dart';
+import 'package:touch_grass/posts/post_states.dart';
 import 'package:touch_grass/services/app_user.dart';
+import 'package:touch_grass/authenticate/home/pages/post_detail_page.dart';
 
 class ProfilePage extends StatefulWidget {
   final String uid;
@@ -20,6 +26,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   late final AuthCubit authCubit;
   late final ProfileCubit profileCubit;
+  late final PostCubit postCubit;
   AppUser? currentUser;
 
   @override
@@ -27,79 +34,183 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     authCubit = context.read<AuthCubit>();
     profileCubit = context.read<ProfileCubit>();
+    postCubit = context.read<PostCubit>();
     currentUser = authCubit.currentUser;
-
     profileCubit.fetchUserProfile(widget.uid);
+    postCubit.fetchAllPosts();
+  }
+
+  void followButtonPressed() {
+    final profileState = profileCubit.state;
+    if (profileState is! ProfileLoaded) {
+      return;
+    }
+    final profileUser = profileState.profileUser;
+    final isFollowing = profileUser.followers.contains(currentUser!.uid);
+
+    setState(() {
+      if (isFollowing) {
+        profileUser.followers.remove(currentUser!.uid);
+      } else {
+        profileUser.followers.add(currentUser!.uid);
+      }
+    });
+
+    profileCubit.toggleFollow(currentUser!.uid, widget.uid).catchError((error) {
+      if (isFollowing) {
+        profileUser.followers.add(currentUser!.uid);
+      } else {
+        profileUser.followers.remove(currentUser!.uid);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isOwnPost = (widget.uid == currentUser!.uid);
+
     return BlocBuilder<ProfileCubit, ProfileState>(builder: (context, state) {
       if (state is ProfileLoaded) {
         final user = state.profileUser;
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(user.name),
-            centerTitle: true,
-            backgroundColor: const Color(0xFFbfd37a),
-
-            actions: [
-              IconButton(
-                onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfilePage(user: user,))), 
-              icon: const Icon(Icons.settings)),
-            ]
-          ),
-          
-          body: 
-          Column(
+              title: Text(user.name),
+              centerTitle: true,
+              backgroundColor: const Color(0xFFbfd37a),
+              actions: [
+                if (isOwnPost)
+                  IconButton(
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfilePage(
+                                    user: user,
+                                  ))),
+                      icon: const Icon(Icons.settings)),
+              ]),
+          body: ListView(
             children: [
-              Center(
-                child: Text(
-                  user.email,
-                  style: const TextStyle(fontSize: 20.0),
-                ),
-              ),
-
               const SizedBox(height: 15.0),
-
-                CachedNetworkImage(
-                  imageUrl: user.profileImageUrl,
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                  imageBuilder: (context, imageProvider) => Container(
-                    height: 120,
-                    width: 120,
-                     decoration: BoxDecoration(
-                     shape: BoxShape.circle,
-                     image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                   ),
+              Column(
+                children: [
+                  ClipOval(
+                    child: user.profileImageUrl.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: user.profileImageUrl,
+                            placeholder: (context, url) =>
+                                const CircularProgressIndicator(),
+                            errorWidget: (context, url, error) {
+                              return const Icon(Icons.person);
+                            },
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : const Icon(
+                            Icons.emoji_emotions,
+                            size: 50.0,
+                          ),
                   ),
-                ),
-            ),
-
+                  const SizedBox(height: 10),
+                  Text(
+                    user.name,
+                    style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
               const SizedBox(height: 15.0),
-
-              const Text("Bio"),
-              const SizedBox(height: 30),
+              ProfileStats(
+                postCount: postCubit.state is PostsLoaded
+                    ? (postCubit.state as PostsLoaded)
+                        .posts
+                        .where((post) => post.userId == widget.uid)
+                        .length
+                    : 0,
+                followerCount: user.followers.length,
+                followingCount: user.following.length,
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FollowerPage(
+                            followers: user.followers,
+                            following: user.following))),
+              ),
+              const SizedBox(height: 15.0),
+              if (!isOwnPost)
+                FollowButton(
+                  onPressed: followButtonPressed,
+                  isFollowing: user.followers.contains(currentUser!.uid),
+                ),
               BioBox(text: user.bio),
-
-              //posts
-              const Padding(padding:
-                 EdgeInsets.all(20.0),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
                 child: Column(
                   children: [
-                     Text('Posts', style: TextStyle(fontSize: 20.0)),
-                     SizedBox(height: 20),
-                     Text('No posts yet..', style: TextStyle(fontSize: 16.0)),
+                    const Text('Posts', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 20),
+                    BlocBuilder<PostCubit, PostState>(
+                      builder: (context, state) {
+                        if (state is PostsLoaded) {
+                          final userPosts = state.posts
+                              .where((post) => post.userId == widget.uid)
+                              .toList();
+
+                          return GridView.builder(
+                            itemCount: userPosts.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 4.0,
+                              mainAxisSpacing: 4.0,
+                            ),
+                            itemBuilder: (context, index) {
+                              final post = userPosts[index];
+
+                              return GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PostDetailPage(post: post),
+                                  ),
+                                ),
+                                child: post.imageUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageUrl: post.imageUrl,
+                                        placeholder: (context, url) =>
+                                            const CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    : const Icon(Icons.image_not_supported),
+                              );
+                            },
+                          );
+                        } else if (state is PostsLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else {
+                          return const Center(child: Text("No posts"));
+                        }
+                      },
+                    )
                   ],
-                ), 
+                ),
               )
             ],
-
-            
           ),
         );
       } else if (state is ProfileLoading) {

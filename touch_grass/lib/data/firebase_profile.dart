@@ -19,12 +19,17 @@ class FirebaseProfileRepo implements ProfileRepo{
         final userData = userDoc.data();
         
         if(userData != null){
+          final followers = List<String>.from(userData['followers'] ?? []);
+          final following = List<String>.from(userData['following'] ?? []);
+
           return ProfileUser(
             uid: uid, 
             email: userData['email'], 
             name: userData['name'], 
             bio: userData['bio'] ?? '', 
-            profileImageUrl: userData['profileImageUrl'].toString()
+            profileImageUrl: userData['profileImageUrl'].toString(),
+            followers: followers,
+            following: following
           );
         }
       }
@@ -50,4 +55,64 @@ class FirebaseProfileRepo implements ProfileRepo{
       throw Exception(e);
     }
   }
+
+@override
+Future<void> toggleFollow(String currentUid, String targetUid) async {
+  try {
+    final currentUserDoc = await firebaseFirestore.collection('users').doc(currentUid).get();
+    final targetUserDoc = await firebaseFirestore.collection('users').doc(targetUid).get();
+
+    if (currentUserDoc.exists && targetUserDoc.exists) {
+      final currentData = currentUserDoc.data();
+      final targetData = targetUserDoc.data();
+
+      if (currentData != null && targetData != null) {
+        final currentFollowing = List<String>.from(currentData['following'] ?? []);
+        final targetFollowers = List<String>.from(targetData['followers'] ?? []);
+
+        if (currentFollowing.contains(targetUid)) {
+          currentFollowing.remove(targetUid);
+          targetFollowers.remove(currentUid);
+
+          await firebaseFirestore.collection('users').doc(currentUid).update({
+            'following': FieldValue.arrayRemove([targetUid])
+          });
+
+          await firebaseFirestore.collection('users').doc(targetUid).update({
+            'followers': FieldValue.arrayRemove([currentUid])
+          });
+
+          print('Unfollowed user: $targetUid'); // Debug statement
+        } else {
+          currentFollowing.add(targetUid);
+          targetFollowers.add(currentUid);
+
+          await firebaseFirestore.collection('users').doc(currentUid).update({
+            'following': FieldValue.arrayUnion([targetUid])
+          });
+
+          await firebaseFirestore.collection('users').doc(targetUid).update({
+            'followers': FieldValue.arrayUnion([currentUid])
+          });
+
+          print('Followed user: $targetUid'); // Debug statement
+        }
+
+        // Update the local lists after Firestore update
+        await firebaseFirestore.collection('users').doc(currentUid).update({
+          'following': currentFollowing
+        });
+
+        await firebaseFirestore.collection('users').doc(targetUid).update({
+          'followers': targetFollowers
+        });
+
+        print('Updated following and followers lists'); // Debug statement
+      }
+    }
+  } catch (e) {
+    print('Error toggling follow: $e'); // Debug statement
+    throw Exception(e);
+  }
+}
 }

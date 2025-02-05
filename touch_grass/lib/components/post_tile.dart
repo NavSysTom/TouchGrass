@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
+import 'package:touch_grass/authenticate/home/pages/profile_page.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/comments/comment.dart';
+import 'package:touch_grass/components/comment_tile.dart';
 import 'package:touch_grass/components/profile_user.dart';
 import 'package:touch_grass/components/textfield.dart';
 import 'package:touch_grass/posts/post.dart';
@@ -106,10 +108,6 @@ class _PostTileState extends State<PostTile> {
   }
 
   void addComment() {
-    print('addComment: currentUser = $currentUser'); // Debug print statement
-    print(
-        'addComment: commentTextController.text = ${commentTextController.text}'); // Debug print statement
-
     final newComment = Comment(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       postId: widget.post.id,
@@ -118,9 +116,6 @@ class _PostTileState extends State<PostTile> {
       text: commentTextController.text, // Use the text from the TextField
       timestamp: DateTime.now(),
     );
-
-    print(
-        'addComment: newComment = ${newComment.toJson()}'); // Debug print statement
 
     if (commentTextController.text.isNotEmpty) {
       postCubit.addComment(widget.post.id, newComment);
@@ -136,46 +131,50 @@ class _PostTileState extends State<PostTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.green,
+      color: const Color(0xFFE8F5E9), // Very light shade of green
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                postUser?.profileImageUrl != null
-                    ? CachedNetworkImage(
-                        imageUrl: postUser!.profileImageUrl,
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) {
-                          print(
-                              'Error loading image: $url'); // Debug print statement
-                          return const Icon(Icons.person);
-                        },
-                        imageBuilder: (context, imageProvider) => Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: imageProvider,
-                              fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  ProfilePage(uid: widget.post.userId))),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  postUser?.profileImageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: postUser!.profileImageUrl,
+                          placeholder: (context, url) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (context, url, error) {
+                            print(
+                                'Error loading image: $url'); // Debug print statement
+                            return const Icon(Icons.person);
+                          },
+                          imageBuilder: (context, imageProvider) => Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
-                      )
-                    : const Icon(Icons.person),
-                const Spacer(),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(widget.post.username),
-                if (isOwnPost)
-                  GestureDetector(
-                      onTap: showOptions, child: const Icon(Icons.delete))
-              ],
+                        )
+                      : const Icon(Icons.person),
+                 
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Text(widget.post.username),
+                   const Spacer(),
+                  if (isOwnPost)
+                    GestureDetector(
+                        onTap: showOptions, child: const Icon(Icons.more_horiz))
+                ],
+              ),
             ),
           ),
           CachedNetworkImage(
@@ -191,8 +190,6 @@ class _PostTileState extends State<PostTile> {
               GestureDetector(
                   onTap: openNewCommentBox, child: const Icon(Icons.comment)),
               Text(widget.post.comments.length.toString()),
-              const Spacer(),
-              Text(widget.post.timestamp.toString())
             ],
           ),
           Padding(
@@ -224,23 +221,7 @@ class _PostTileState extends State<PostTile> {
                   itemBuilder: (context, index) {
                     final comment = post.comments[index];
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 1.0, horizontal: 5.0),
-                      child: Row(
-                        children: [
-                          Text(
-                            comment.username,
-                          ),
-                          const SizedBox(
-                              width:
-                                  5), // Add a gap between username and comment text
-                          Expanded(
-                            child: Text(comment.text),
-                          ),
-                        ],
-                      ),
-                    );
+                    return CommentTile(comment: comment);
                   },
                 );
               }
@@ -253,10 +234,13 @@ class _PostTileState extends State<PostTile> {
                 child: Text(state.message),
               );
             } else {
-              return const Center(
-                child: Text("No Comments Available"),
-              );
-            }
+                return const Center(
+                child: Text(
+                  "No Comments Available",
+                  style: TextStyle(color: Colors.grey),
+                ),
+                );
+              }
           }),
         ],
       ),
