@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/profile_state.dart';
 import 'package:touch_grass/components/profile_user.dart';
@@ -9,6 +10,7 @@ import 'package:touch_grass/storage/storage_repo.dart';
 class ProfileCubit extends Cubit<ProfileState> {
   final ProfileRepo profileRepo;
   final StorageRepo storageRepo;
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   ProfileCubit({
     required this.profileRepo,
@@ -22,6 +24,19 @@ class ProfileCubit extends Cubit<ProfileState> {
       emit(ProfileLoaded(profileUser: user));
     } catch (e) {
       emit(ProfileError(e.toString()));
+    }
+  }
+
+  Future<int> fetchStreakCount(String uid) async {
+    try {
+      final doc = await firestore.collection('streaks').doc(uid).get();
+      if (doc.exists) {
+        return doc.data()?['streakCount'] ?? 0;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      throw Exception("Failed to fetch streak count: $e");
     }
   }
 
@@ -75,12 +90,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   Future<void> toggleFollow(String currentUserId, String targetUserId) async {
     try {
-      print('Toggling follow for user: $currentUserId -> $targetUserId'); // Debug statement
       await profileRepo.toggleFollow(currentUserId, targetUserId);
-      print('Follow toggled successfully'); // Debug statement
       await fetchUserProfile(targetUserId);
     } catch (e) {
-      print('Error toggling follow: $e'); // Debug statement
       emit(ProfileError("Error toggling follow: ${e.toString()}"));
     }
   }

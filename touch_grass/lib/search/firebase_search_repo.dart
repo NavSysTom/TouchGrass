@@ -10,7 +10,7 @@ class FirebaseSearchRepo implements SearchRepo {
       final result = await FirebaseFirestore.instance
           .collection("users")
           .where("email", isGreaterThanOrEqualTo: query)
-          .where("email", isLessThanOrEqualTo: query + '\uf8ff')
+          .where("email", isLessThanOrEqualTo: '$query\uf8ff')
           .get();
 
       print('Search query executed successfully'); // Debug statement

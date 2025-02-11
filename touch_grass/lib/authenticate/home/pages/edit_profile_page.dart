@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/authenticate/profile_state.dart';
 import 'package:touch_grass/components/profile_user.dart';
-import 'package:touch_grass/components/textfield.dart';
 
 class EditProfilePage extends StatefulWidget {
   final ProfileUser user;

@@ -10,6 +10,8 @@ class BioBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isBioEmpty = text.isEmpty;
+
     return Container(
       margin: const EdgeInsets.all(20.0),
       padding: const EdgeInsets.all(20.0),
@@ -19,10 +21,10 @@ class BioBox extends StatelessWidget {
       ),
       width: double.infinity,
       child: Text(
-        text.isNotEmpty ? text : 'No bio available..',
-        style: const TextStyle(
+        isBioEmpty ? 'No bio available..' : text,
+        style: TextStyle(
           fontSize: 16.0,
-          color: Colors.grey,
+          color: isBioEmpty ? Colors.grey : Colors.black,
         ),
         textAlign: TextAlign.center,
       ),

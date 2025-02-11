@@ -28,6 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late final ProfileCubit profileCubit;
   late final PostCubit postCubit;
   AppUser? currentUser;
+  int streakCount = 0;
 
   @override
   void initState() {
@@ -38,6 +39,18 @@ class _ProfilePageState extends State<ProfilePage> {
     currentUser = authCubit.currentUser;
     profileCubit.fetchUserProfile(widget.uid);
     postCubit.fetchAllPosts();
+    fetchStreakCount();
+  }
+
+  Future<void> fetchStreakCount() async {
+    streakCount = await profileCubit.fetchStreakCount(widget.uid);
+    setState(() {});
+  }
+
+  Future<void> _refreshPage() async {
+    profileCubit.fetchUserProfile(widget.uid);
+    postCubit.fetchAllPosts();
+    fetchStreakCount();
   }
 
   void followButtonPressed() {
@@ -89,128 +102,143 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ))),
                       icon: const Icon(Icons.settings)),
               ]),
-          body: ListView(
-            children: [
-              const SizedBox(height: 15.0),
-              Column(
-                children: [
-                  ClipOval(
-                    child: user.profileImageUrl.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl: user.profileImageUrl,
-                            placeholder: (context, url) =>
-                                const CircularProgressIndicator(),
-                            errorWidget: (context, url, error) {
-                              return const Icon(Icons.person);
-                            },
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(
-                            Icons.emoji_emotions,
-                            size: 50.0,
-                          ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    user.name,
-                    style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15.0),
-              ProfileStats(
-                postCount: postCubit.state is PostsLoaded
-                    ? (postCubit.state as PostsLoaded)
-                        .posts
-                        .where((post) => post.userId == widget.uid)
-                        .length
-                    : 0,
-                followerCount: user.followers.length,
-                followingCount: user.following.length,
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => FollowerPage(
-                            followers: user.followers,
-                            following: user.following))),
-              ),
-              const SizedBox(height: 15.0),
-              if (!isOwnPost)
-                FollowButton(
-                  onPressed: followButtonPressed,
-                  isFollowing: user.followers.contains(currentUser!.uid),
-                ),
-              BioBox(text: user.bio),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
+          body: RefreshIndicator(
+            onRefresh: _refreshPage,
+            child: ListView(
+              children: [
+                const SizedBox(height: 15.0),
+                Column(
                   children: [
-                    const Text('Posts', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 20),
-                    BlocBuilder<PostCubit, PostState>(
-                      builder: (context, state) {
-                        if (state is PostsLoaded) {
-                          final userPosts = state.posts
-                              .where((post) => post.userId == widget.uid)
-                              .toList();
-
-                          return GridView.builder(
-                            itemCount: userPosts.length,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 4.0,
-                              mainAxisSpacing: 4.0,
+                    ClipOval(
+                      child: user.profileImageUrl.isNotEmpty
+                          ? CachedNetworkImage(
+                              imageUrl: user.profileImageUrl,
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) {
+                                return const Icon(Icons.person);
+                              },
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            )
+                          : const Icon(
+                              Icons.emoji_emotions,
+                              size: 50.0,
                             ),
-                            itemBuilder: (context, index) {
-                              final post = userPosts[index];
-
-                              return GestureDetector(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PostDetailPage(post: post),
-                                  ),
-                                ),
-                                child: post.imageUrl.isNotEmpty
-                                    ? CachedNetworkImage(
-                                        imageUrl: post.imageUrl,
-                                        placeholder: (context, url) =>
-                                            const CircularProgressIndicator(),
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                        imageBuilder:
-                                            (context, imageProvider) =>
-                                                Container(
-                                          decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                              image: imageProvider,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : const Icon(Icons.image_not_supported),
-                              );
-                            },
-                          );
-                        } else if (state is PostsLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else {
-                          return const Center(child: Text("No posts"));
-                        }
-                      },
-                    )
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      user.name,
+                      style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.whatshot, color: Colors.orange),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Streak: $streakCount days',
+                          style: const TextStyle(fontSize: 16.0),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              )
-            ],
+                const SizedBox(height: 15.0),
+                ProfileStats(
+                  postCount: postCubit.state is PostsLoaded
+                      ? (postCubit.state as PostsLoaded)
+                          .posts
+                          .where((post) => post.userId == widget.uid)
+                          .length
+                      : 0,
+                  followerCount: user.followers.length,
+                  followingCount: user.following.length,
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FollowerPage(
+                              followers: user.followers,
+                              following: user.following))),
+                ),
+                const SizedBox(height: 15.0),
+                if (!isOwnPost)
+                  FollowButton(
+                    onPressed: followButtonPressed,
+                    isFollowing: user.followers.contains(currentUser!.uid),
+                  ),
+                BioBox(text: user.bio),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    children: [
+                      const Text('Posts', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 20),
+                      BlocBuilder<PostCubit, PostState>(
+                        builder: (context, state) {
+                          if (state is PostsLoaded) {
+                            final userPosts = state.posts
+                                .where((post) => post.userId == widget.uid)
+                                .toList();
+
+                            return GridView.builder(
+                              itemCount: userPosts.length,
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 4.0,
+                                mainAxisSpacing: 4.0,
+                              ),
+                              itemBuilder: (context, index) {
+                                final post = userPosts[index];
+
+                                return GestureDetector(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          PostDetailPage(post: post),
+                                    ),
+                                  ),
+                                  child: post.imageUrl.isNotEmpty
+                                      ? CachedNetworkImage(
+                                          imageUrl: post.imageUrl,
+                                          placeholder: (context, url) =>
+                                              const CircularProgressIndicator(),
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                          imageBuilder:
+                                              (context, imageProvider) =>
+                                                  Container(
+                                            decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : const Icon(Icons.image_not_supported),
+                                );
+                              },
+                            );
+                          } else if (state is PostsLoading) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          } else {
+                            return const Center(child: Text("No posts"));
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         );
       } else if (state is ProfileLoading) {
