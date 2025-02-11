@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           // post cubit
           BlocProvider<PostCubit>(
             create: (context) =>
-                PostCubit(postRepo: postRepo, storageRepo: storageRepo),
+                PostCubit(storageRepo: storageRepo),
           ),
           BlocProvider<SearchCubit>(
             create: (context) =>

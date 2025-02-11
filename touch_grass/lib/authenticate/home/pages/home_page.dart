@@ -15,6 +15,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final postCubit = context.read<PostCubit>();
+  bool showFollowedPosts = false;
+  String selectedCategory = 'all';
 
   @override
   void initState() {
@@ -26,10 +28,16 @@ class _HomePageState extends State<HomePage> {
     postCubit.fetchAllPosts();
   }
 
+  void fetchFollowedPosts() {
+    postCubit.fetchFollowedPosts();
+  }
+
   void deletePost(String postId) async {
     postCubit.deletePost(postId);
     fetchAllPosts();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +46,52 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Touch Grass'),
         centerTitle: true,
         backgroundColor: const Color(0xFFbfd37a),
+        actions: [
+          IconButton(
+            icon: Icon(showFollowedPosts ? Icons.people : Icons.people_outline),
+            onPressed: () {
+              setState(() {
+                showFollowedPosts = !showFollowedPosts;
+              });
+              if (showFollowedPosts) {
+                fetchFollowedPosts();
+              } else {
+                fetchAllPosts();
+              }
+            },
+          ),
+          PopupMenuButton<String>(
+            onSelected: (String category) {
+              setState(() {
+                selectedCategory = category;
+              });
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem(
+                  value: 'all',
+                  child: Text('All'),
+                ),
+                const PopupMenuItem(
+                  value: 'flowers',
+                  child: Text('Flowers'),
+                ),
+                const PopupMenuItem(
+                  value: 'bugs',
+                  child: Text('Bugs'),
+                ),
+                const PopupMenuItem(
+                  value: 'animals',
+                  child: Text('Animals'),
+                ),
+                const PopupMenuItem(
+                  value: 'wildscape',
+                  child: Text('Wildscape'),
+                ),
+              ];
+            },
+          ),
+        ],
       ),
       drawer: const MyDrawer(),
       body: BlocBuilder<PostCubit, PostState>(
