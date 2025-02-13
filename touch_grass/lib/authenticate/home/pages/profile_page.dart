@@ -7,6 +7,7 @@ import 'package:touch_grass/authenticate/home/pages/follower_page.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/authenticate/profile_state.dart';
 import 'package:touch_grass/components/bio_box.dart';
+import 'package:touch_grass/components/drawer.dart';
 import 'package:touch_grass/components/follow_button.dart';
 import 'package:touch_grass/components/profile_stats.dart';
 import 'package:touch_grass/posts/post_cubit.dart';
@@ -102,6 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ))),
                       icon: const Icon(Icons.settings)),
               ]),
+          drawer: const MyDrawer(), // Add the drawer here
           body: RefreshIndicator(
             onRefresh: _refreshPage,
             child: ListView(
@@ -146,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 10.0), // Reduced space
                 ProfileStats(
                   postCount: postCubit.state is PostsLoaded
                       ? (postCubit.state as PostsLoaded)
@@ -163,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               followers: user.followers,
                               following: user.following))),
                 ),
-                const SizedBox(height: 15.0),
+                const SizedBox(height: 10.0), // Reduced space
                 if (!isOwnPost)
                   FollowButton(
                     onPressed: followButtonPressed,
@@ -171,11 +173,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 BioBox(text: user.bio),
                 Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.all(10.0), // Reduced padding
                   child: Column(
                     children: [
                       const Text('Posts', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10), // Reduced space
                       BlocBuilder<PostCubit, PostState>(
                         builder: (context, state) {
                           if (state is PostsLoaded) {

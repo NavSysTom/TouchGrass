@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
+import 'package:touch_grass/authenticate/home/pages/home_page.dart';
 import 'package:touch_grass/authenticate/home/pages/profile_page.dart';
 import 'package:touch_grass/authenticate/home/pages/search_page.dart';
 import 'package:touch_grass/components/drawer_tile.dart';
@@ -30,7 +31,16 @@ class MyDrawer extends StatelessWidget {
                 context,
                 title: 'Home',
                 icon: Icons.home,
-                onTap: () => Navigator.of(context).pop(),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  if (ModalRoute.of(context)?.settings.name != '/') {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const HomePage()),
+                      (route) => false,
+                    );
+                  }
+                },
               ),
               _buildDrawerTile(
                 context,
