@@ -32,18 +32,24 @@ class _HomePageState extends State<HomePage> {
     postCubit.fetchFollowedPosts();
   }
 
+  void fetchPostsByCategory(String category) {
+    if (category == 'all') {
+      fetchAllPosts();
+    } else {
+      postCubit.fetchPostsByCategory(category);
+    }
+  }
+
   void deletePost(String postId) async {
     postCubit.deletePost(postId);
     fetchAllPosts();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Touch Grass'),
+        title: const Text('Touch Grass', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: const Color(0xFFbfd37a),
         actions: [
@@ -61,32 +67,64 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           PopupMenuButton<String>(
+            icon: const Icon(Icons.sort),
             onSelected: (String category) {
               setState(() {
                 selectedCategory = category;
               });
+              fetchPostsByCategory(category);
             },
             itemBuilder: (BuildContext context) {
               return [
                 const PopupMenuItem(
                   value: 'all',
-                  child: Text('All'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.all_inclusive, color: Colors.blue),
+                      SizedBox(width: 8),
+                      Text('All'),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem(
                   value: 'flowers',
-                  child: Text('Flowers'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.local_florist, color: Colors.pink),
+                      SizedBox(width: 8),
+                      Text('Flowers'),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem(
                   value: 'bugs',
-                  child: Text('Bugs'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.bug_report, color: Colors.red),
+                      SizedBox(width: 8),
+                      Text('Bugs'),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem(
                   value: 'animals',
-                  child: Text('Animals'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.pets, color: Colors.brown),
+                      SizedBox(width: 8),
+                      Text('Animals'),
+                    ],
+                  ),
                 ),
                 const PopupMenuItem(
                   value: 'wildscape',
-                  child: Text('Wildscape'),
+                  child: Row(
+                    children: [
+                      Icon(Icons.landscape, color: Colors.green),
+                      SizedBox(width: 8),
+                      Text('Wildscape'),
+                    ],
+                  ),
                 ),
               ];
             },

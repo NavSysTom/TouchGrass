@@ -63,10 +63,10 @@ class FollowerPage extends StatelessWidget {
                     return const ListTile(title: Text("Loading"));
                   } else if (snapshot.hasData) {
                     final user = snapshot.data!;
-                    print('User found: ${user.name}'); // Debug statement
+                    print('User found: ${user.name}');
                     return UserTile(user: user);
                   } else {
-                    print('User not found for UID: $uid'); // Debug statement
+                    print('User not found for UID: $uid');
                     return const ListTile(title: Text("User not found"));
                   }
                 },

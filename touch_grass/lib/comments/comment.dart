@@ -29,13 +29,13 @@ class Comment {
   }
 
   factory Comment.fromJson(Map<String, dynamic> json) {
-    print('Comment.fromJson: json = $json'); // Debug print statement
+    print('Comment.fromJson: json = $json'); 
 
     return Comment(
       id: json['id'] as String? ?? '',
       postId: json['postId'] as String? ?? '',
       userId: json['userId'] as String? ?? '',
-      username: json['username'] as String? ?? '', // Ensure correct field name
+      username: json['username'] as String? ?? '',
       text: json['text'] as String? ?? '',
       timestamp: (json['timestamp'] as Timestamp).toDate(),
     );

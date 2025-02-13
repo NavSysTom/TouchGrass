@@ -9,6 +9,7 @@ class Post {
   final String imageUrl;
   final DateTime timestamp;
   final List<Comment> comments;
+  final String category; 
 
   Post({
     required this.id,
@@ -18,6 +19,7 @@ class Post {
     required this.imageUrl,
     required this.timestamp,
     required this.comments,
+    required this.category,
   });
 
   Post copyWith({String? imageUrl}) {
@@ -29,6 +31,7 @@ class Post {
       imageUrl: imageUrl ?? this.imageUrl,
       timestamp: timestamp,
       comments: comments,
+      category: category,
     );
   }
 
@@ -41,17 +44,14 @@ class Post {
       'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
       'comments': comments.map((comment) => comment.toJson()).toList(),
+      'category': category, 
     };
   }
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    print('Post.fromJson: json = $json'); // Debug print statement
-
     final List<Comment> comments = (json['comments'] as List<dynamic>?)
             ?.map((commentJson) => Comment.fromJson(commentJson as Map<String, dynamic>))
             .toList() ?? [];
-
-    print('Post.fromJson: comments = $comments'); // Debug print statement
 
     return Post(
       id: json['id'] as String? ?? '',
@@ -61,6 +61,7 @@ class Post {
       imageUrl: json['imageUrl'] as String? ?? '',
       timestamp: (json['timestamp'] as Timestamp).toDate(),
       comments: comments,
+      category: json['category'] as String? ?? '', 
     );
   }
 }

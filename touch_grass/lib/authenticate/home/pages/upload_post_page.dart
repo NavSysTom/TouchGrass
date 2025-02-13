@@ -20,6 +20,7 @@ class UploadPostPage extends StatefulWidget {
 class _UploadPostPageState extends State<UploadPostPage> {
   PlatformFile? imagePickedFile;
   Uint8List? webImage;
+  String selectedCategory = 'all'; 
 
   final textController = TextEditingController();
 
@@ -64,9 +65,10 @@ class _UploadPostPageState extends State<UploadPostPage> {
       userId: currentUser!.uid,
       username: currentUser!.name,
       text: textController.text,
-      imageUrl: '', // This will be updated after the image is uploaded
+      imageUrl: '', 
       timestamp: DateTime.now(),
       comments: [],
+      category: selectedCategory, 
     );
 
     final PostCubit postCubit = context.read<PostCubit>();
@@ -106,10 +108,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
       },
       listener: (context, state) {
         if (state is PostsLoaded) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const UploadPostPage()),
-          );
+          Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Upload successful!')),
           );
@@ -125,64 +124,82 @@ class _UploadPostPageState extends State<UploadPostPage> {
   Widget buildUploadPage() {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Post'),
-        centerTitle: true,
+        title: const Text('Upload Post'),
         backgroundColor: const Color(0xFFbfd37a),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (kIsWeb && webImage != null)
-              SizedBox(
-                height: 300,
-                width: double.infinity,
-                child: Image.memory(webImage!, fit: BoxFit.cover),
-              ),
-            if (!kIsWeb && imagePickedFile != null)
-              SizedBox(
-                height: 300,
-                width: double.infinity,
-                child: Image.file(
-                  File(imagePickedFile!.path!),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            const SizedBox(height: 20),
-            MaterialButton(
-              onPressed: pickImage,
-              color: Colors.blue,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: const Text('Pick Image', style: TextStyle(color: Colors.white)),
-            ),
-            const Spacer(),
             TextField(
               controller: textController,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: "Enter a caption",
-                hintStyle: const TextStyle(color: Colors.grey),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: const BorderSide(color: Colors.blue),
-                ),
-              ),
+              decoration: const InputDecoration(hintText: 'Write a caption...'),
             ),
             const SizedBox(height: 20),
-            MaterialButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => setState(() => selectedCategory = 'flowers'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedCategory == 'flowers'
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    child: const Text('Flowers'),
+                  ),
+                ),
+                const SizedBox(width: 8), 
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => setState(() => selectedCategory = 'bugs'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedCategory == 'bugs' ? Colors.green : Colors.grey,
+                    ),
+                    child: const Text('Bugs'),
+                  ),
+                ),
+                const SizedBox(width: 8), 
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => setState(() => selectedCategory = 'animals'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedCategory == 'animals'
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    child: const Text('Animals'),
+                  ),
+                ),
+                const SizedBox(width: 8), 
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => setState(() => selectedCategory = 'wildscape'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: selectedCategory == 'wildscape'
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    child: const Text('Wildscape'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: pickImage,
+              child: const Text('Pick Image'),
+            ),
+            const SizedBox(height: 20),
+            if (imagePickedFile != null)
+              kIsWeb
+                  ? Image.memory(webImage!, height: 200)
+                  : Image.file(File(imagePickedFile!.path!), height: 200),
+            const SizedBox(height: 20),
+            ElevatedButton(
               onPressed: uploadPost,
-              color: Colors.green,
-              padding: const EdgeInsets.symmetric(vertical: 15.0),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: const Text('Upload', style: TextStyle(color: Colors.white)),
+              child: const Text('Upload Post'),
             ),
           ],
         ),

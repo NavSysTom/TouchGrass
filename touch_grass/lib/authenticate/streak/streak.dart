@@ -7,7 +7,7 @@ class Streak {
   final String username;
   final String text;
   final DateTime timestamp;
-  int streakCount; // Add streakCount field
+  int streakCount;
 
   Streak({
     required this.id,
@@ -16,7 +16,7 @@ class Streak {
     required this.username,
     required this.text,
     required this.timestamp,
-    this.streakCount = 0, // Initialize streakCount
+    this.streakCount = 0, 
   });
 
   Map<String, dynamic> toJson() {
@@ -27,21 +27,21 @@ class Streak {
       'username': username,
       'text': text,
       'timestamp': Timestamp.fromDate(timestamp),
-      'streakCount': streakCount, // Add streakCount to JSON
+      'streakCount': streakCount, 
     };
   }
 
   factory Streak.fromJson(Map<String, dynamic> json) {
-    print('Streak.fromJson: json = $json'); // Debug print statement
+    print('Streak.fromJson: json = $json'); 
 
     return Streak(
       id: json['id'] as String? ?? '',
       postId: json['postId'] as String? ?? '',
       userId: json['userId'] as String? ?? '',
-      username: json['username'] as String? ?? '', // Ensure correct field name
+      username: json['username'] as String? ?? '', 
       text: json['text'] as String? ?? '',
       timestamp: (json['timestamp'] as Timestamp).toDate(),
-      streakCount: json['streakCount'] as int? ?? 0, // Retrieve streakCount
+      streakCount: json['streakCount'] as int? ?? 0, 
     );
   }
 

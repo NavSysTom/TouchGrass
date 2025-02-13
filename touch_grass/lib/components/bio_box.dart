@@ -16,7 +16,6 @@ class BioBox extends StatelessWidget {
       margin: const EdgeInsets.all(20.0),
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Colors.grey[300], // Light grey color
         borderRadius: BorderRadius.circular(10.0),
       ),
       width: double.infinity,

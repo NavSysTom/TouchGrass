@@ -37,9 +37,14 @@ class PostCubit extends Cubit<PostState> {
       final lastPostDate = await _getLastPostDate(userId);
       final now = DateTime.now();
 
-      if (lastPostDate == null || now.difference(lastPostDate.toDate()).inHours >= 24) {
+      if (lastPostDate == null || now.difference(lastPostDate.toDate()).inHours >= 36) {
+        // Reset streak count if more than 48 hours have passed
+        await _updateStreakCount(userId, 1);
+      } else if (now.difference(lastPostDate.toDate()).inHours >= 24) {
+        // Increment streak count if more than 24 hours have passed
         await _updateStreakCount(userId, streakCount + 1);
-      } else if (now.difference(lastPostDate.toDate()).inHours < 24) {
+      } else {
+        // Keep the same streak count if less than 24 hours have passed
         await _updateStreakCount(userId, streakCount);
       }
 
@@ -57,6 +62,24 @@ class PostCubit extends Cubit<PostState> {
       emit(PostsLoaded(posts));
     } catch (e) {
       emit(PostsError("Failed to fetch posts: $e"));
+    }
+  }
+
+  Future<void> fetchPostsByCategory(String category) async {
+    try {
+      emit(PostsLoading());
+      final postsSnapshot = await postCollection
+          .where('category', isEqualTo: category)
+          .orderBy('timestamp', descending: true)
+          .get();
+
+      final List<Post> categoryPosts = postsSnapshot.docs
+          .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      emit(PostsLoaded(categoryPosts));
+    } catch (e) {
+      emit(PostsError("Failed to fetch posts by category: $e"));
     }
   }
 
