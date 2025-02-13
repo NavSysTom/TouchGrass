@@ -82,7 +82,7 @@ Future<void> toggleFollow(String currentUid, String targetUid) async {
             'followers': FieldValue.arrayRemove([currentUid])
           });
 
-          print('Unfollowed user: $targetUid'); // Debug statement
+          print('Unfollowed user: $targetUid'); 
         } else {
           currentFollowing.add(targetUid);
           targetFollowers.add(currentUid);
@@ -95,7 +95,7 @@ Future<void> toggleFollow(String currentUid, String targetUid) async {
             'followers': FieldValue.arrayUnion([currentUid])
           });
 
-          print('Followed user: $targetUid'); // Debug statement
+          print('Followed user: $targetUid');
         }
 
         // Update the local lists after Firestore update
@@ -107,11 +107,11 @@ Future<void> toggleFollow(String currentUid, String targetUid) async {
           'followers': targetFollowers
         });
 
-        print('Updated following and followers lists'); // Debug statement
+        print('Updated following and followers lists'); 
       }
     }
   } catch (e) {
-    print('Error toggling follow: $e'); // Debug statement
+    print('Error toggling follow: $e'); 
     throw Exception(e);
   }
 }

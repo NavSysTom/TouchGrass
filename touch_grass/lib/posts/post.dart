@@ -9,7 +9,7 @@ class Post {
   final String imageUrl;
   final DateTime timestamp;
   final List<Comment> comments;
-  final String category; // Add this line
+  final String category; 
 
   Post({
     required this.id,
@@ -19,7 +19,7 @@ class Post {
     required this.imageUrl,
     required this.timestamp,
     required this.comments,
-    required this.category, // Add this line
+    required this.category,
   });
 
   Post copyWith({String? imageUrl}) {
@@ -31,7 +31,7 @@ class Post {
       imageUrl: imageUrl ?? this.imageUrl,
       timestamp: timestamp,
       comments: comments,
-      category: category, // Add this line
+      category: category,
     );
   }
 
@@ -44,7 +44,7 @@ class Post {
       'imageUrl': imageUrl,
       'timestamp': Timestamp.fromDate(timestamp),
       'comments': comments.map((comment) => comment.toJson()).toList(),
-      'category': category, // Add this line
+      'category': category, 
     };
   }
 
@@ -61,7 +61,7 @@ class Post {
       imageUrl: json['imageUrl'] as String? ?? '',
       timestamp: (json['timestamp'] as Timestamp).toDate(),
       comments: comments,
-      category: json['category'] as String? ?? '', // Add this line
+      category: json['category'] as String? ?? '', 
     );
   }
 }

@@ -122,8 +122,8 @@ class _RegisterState extends State<Register> {
                 MyButton(
                   onTap: register,
                   text: 'Register',
-                  height: 40, // Specify the height
-                  width: 150, // Specify the width
+                  height: 40, 
+                  width: 150,
                 ),
                 const SizedBox(height: 10.0),
                 Row(
@@ -136,7 +136,7 @@ class _RegisterState extends State<Register> {
                         'Login now',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.blue, // Change to your desired color
+                          color: Colors.blue, 
                         ),
                       ),
                     ),

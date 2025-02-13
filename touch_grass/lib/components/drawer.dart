@@ -89,9 +89,9 @@ class MyDrawer extends StatelessWidget {
           final user = snapshot.data!;
           final profileImageUrl = user.profileImageUrl;
           if (profileImageUrl.isEmpty) {
-            print('Profile image URL is empty or null'); // Debug statement
+            print('Profile image URL is empty or null');
           } else {
-            print('Profile image URL: $profileImageUrl'); // Debug statement
+            print('Profile image URL: $profileImageUrl'); 
           }
           return Column(
             children: [
@@ -102,7 +102,7 @@ class MyDrawer extends StatelessWidget {
                         placeholder: (context, url) =>
                             const CircularProgressIndicator(),
                         errorWidget: (context, url, error) {
-                          print('Error loading image: $url'); // Debug print statement
+                          print('Error loading image: $url'); 
                           return const Icon(Icons.person);
                         },
                         width: 100,
@@ -122,7 +122,7 @@ class MyDrawer extends StatelessWidget {
             ],
           );
         } else {
-          print('Error loading profile image'); // Debug statement
+          print('Error loading profile image'); 
           return const Icon(
             Icons.person,
             size: 100.0,

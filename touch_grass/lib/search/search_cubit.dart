@@ -17,12 +17,12 @@ class SearchCubit extends Cubit<SearchState> {
 
     try {
       emit(SearchLoading());
-      print('Searching for users with query: $query'); // Debug statement
+      print('Searching for users with query: $query'); 
       final users = await searchRepo.searchUsers(query);
-      print('Search results: ${users.length} users found'); // Debug statement
+      print('Search results: ${users.length} users found'); 
       emit(SearchLoaded(users));
     } catch (e) {
-      print('Error searching: $e'); // Debug statement
+      print('Error searching: $e'); 
       emit(SearchError('Error searching'));
     }
   }

@@ -20,7 +20,7 @@ class UploadPostPage extends StatefulWidget {
 class _UploadPostPageState extends State<UploadPostPage> {
   PlatformFile? imagePickedFile;
   Uint8List? webImage;
-  String selectedCategory = 'all'; // Default category
+  String selectedCategory = 'all'; 
 
   final textController = TextEditingController();
 
@@ -65,10 +65,10 @@ class _UploadPostPageState extends State<UploadPostPage> {
       userId: currentUser!.uid,
       username: currentUser!.name,
       text: textController.text,
-      imageUrl: '', // This will be updated after the image is uploaded
+      imageUrl: '', 
       timestamp: DateTime.now(),
       comments: [],
-      category: selectedCategory, // Add this line
+      category: selectedCategory, 
     );
 
     final PostCubit postCubit = context.read<PostCubit>();
@@ -150,7 +150,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
                     child: const Text('Flowers'),
                   ),
                 ),
-                const SizedBox(width: 8), // Add some spacing between buttons
+                const SizedBox(width: 8), 
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => setState(() => selectedCategory = 'bugs'),
@@ -160,7 +160,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
                     child: const Text('Bugs'),
                   ),
                 ),
-                const SizedBox(width: 8), // Add some spacing between buttons
+                const SizedBox(width: 8), 
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => setState(() => selectedCategory = 'animals'),
@@ -172,7 +172,7 @@ class _UploadPostPageState extends State<UploadPostPage> {
                     child: const Text('Animals'),
                   ),
                 ),
-                const SizedBox(width: 8), // Add some spacing between buttons
+                const SizedBox(width: 8), 
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => setState(() => selectedCategory = 'wildscape'),

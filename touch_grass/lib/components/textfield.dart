@@ -20,12 +20,10 @@ class MyTextfield extends StatelessWidget {
         hintText: hintText,
         prefixIcon: const Icon(Icons.email),
         contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-        //border when unfocused
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
           borderSide: const BorderSide(color: Colors.grey),
         ),
-        //border when selected
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
           borderSide: const BorderSide(color: Colors.pink),

@@ -103,7 +103,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   ))),
                       icon: const Icon(Icons.settings)),
               ]),
-          drawer: const MyDrawer(), // Add the drawer here
+          drawer: const MyDrawer(), 
           body: RefreshIndicator(
             onRefresh: _refreshPage,
             child: ListView(
@@ -148,7 +148,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 10.0), // Reduced space
+                const SizedBox(height: 10.0), 
                 ProfileStats(
                   postCount: postCubit.state is PostsLoaded
                       ? (postCubit.state as PostsLoaded)
@@ -165,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               followers: user.followers,
                               following: user.following))),
                 ),
-                const SizedBox(height: 10.0), // Reduced space
+                const SizedBox(height: 10.0), 
                 if (!isOwnPost)
                   FollowButton(
                     onPressed: followButtonPressed,
@@ -173,11 +173,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 BioBox(text: user.bio),
                 Padding(
-                  padding: const EdgeInsets.all(10.0), // Reduced padding
+                  padding: const EdgeInsets.all(10.0), 
                   child: Column(
                     children: [
                       const Text('Posts', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10), // Reduced space
+                      const SizedBox(height: 10), 
                       BlocBuilder<PostCubit, PostState>(
                         builder: (context, state) {
                           if (state is PostsLoaded) {

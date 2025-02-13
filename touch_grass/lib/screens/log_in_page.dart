@@ -26,7 +26,6 @@ class _LogInPageState extends State<LogInPage> {
     if (email.isNotEmpty && password.isNotEmpty) {
       authCubit.login(email, password);
     } else {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter email and password'),

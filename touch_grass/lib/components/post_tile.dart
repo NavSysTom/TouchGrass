@@ -53,11 +53,11 @@ class _PostTileState extends State<PostTile> {
       setState(() {
         postUser = fetchedUser;
       });
-      print('fetchPostUser: postUser = $postUser'); // Debug print statement
+      print('fetchPostUser: postUser = $postUser'); 
       print(
-          'fetchPostUser: profileImageUrl = ${postUser?.profileImageUrl}'); // Debug print statement
+          'fetchPostUser: profileImageUrl = ${postUser?.profileImageUrl}');
     } else {
-      print('fetchPostUser: fetchedUser is null'); // Debug print statement
+      print('fetchPostUser: fetchedUser is null');
     }
   }
 
@@ -111,9 +111,9 @@ class _PostTileState extends State<PostTile> {
     final newComment = Comment(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       postId: widget.post.id,
-      userId: currentUser!.uid, // Use currentUser's ID
-      username: currentUser!.name, // Use currentUser's name
-      text: commentTextController.text, // Use the text from the TextField
+      userId: currentUser!.uid, 
+      username: currentUser!.name, 
+      text: commentTextController.text, 
       timestamp: DateTime.now(),
     );
 
@@ -131,7 +131,7 @@ class _PostTileState extends State<PostTile> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFE8F5E9), // Very light shade of green
+      color: const Color(0xFFE8F5E9), 
       child: Column(
         children: [
           GestureDetector(
@@ -148,7 +148,7 @@ class _PostTileState extends State<PostTile> {
                               const CircularProgressIndicator(),
                           errorWidget: (context, url, error) {
                             print(
-                                'Error loading image: $url'); // Debug print statement
+                                'Error loading image: $url'); 
                             return const Icon(Icons.person);
                           },
                           imageBuilder: (context, imageProvider) => Container(

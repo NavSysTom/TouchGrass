@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           PopupMenuButton<String>(
-            icon: const Icon(Icons.sort), // Change the icon to sort
+            icon: const Icon(Icons.sort),
             onSelected: (String category) {
               setState(() {
                 selectedCategory = category;

@@ -46,27 +46,27 @@ class _SearchPageState extends State<SearchPage> {
       body: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
           if (state is SearchLoaded) {
-            print('SearchLoaded state: ${state.users.length} users found'); // Debug statement
+            print('SearchLoaded state: ${state.users.length} users found'); 
             if (state.users.isEmpty) {
-              print('No users found'); // Debug statement
+              print('No users found'); 
               return const Center(child: Text("No users found"));
             }
             return ListView.builder(
               itemCount: state.users.length,
               itemBuilder: (context, index) {
                 final user = state.users[index];
-                print('Displaying user: ${user?.name}'); // Debug statement
+                print('Displaying user: ${user?.name}'); 
                 return UserTile(user: user!);
               },
             );
           } else if (state is SearchLoading) {
-            print('SearchLoading state'); // Debug statement
+            print('SearchLoading state'); 
             return const Center(child: CircularProgressIndicator());
           } else if (state is SearchError) {
-            print('SearchError state: ${state.message}'); // Debug statement
+            print('SearchError state: ${state.message}'); 
             return Center(child: Text(state.message));
           }
-          print('SearchInitial state'); // Debug statement
+          print('SearchInitial state'); 
           return const Center(child: Text("Search for users"));
         },
       ),
