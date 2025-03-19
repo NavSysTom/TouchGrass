@@ -36,6 +36,10 @@ class PostCubit extends Cubit<PostState> {
       final streakCount = await _getStreakCount(userId);
       final lastPostDate = await _getLastPostDate(userId);
       final now = DateTime.now();
+      final usersCollection = firestore.collection('users');
+      await usersCollection.doc(userId).set({
+        'hasPostedToday': true,
+      });
 
       if (lastPostDate == null || now.difference(lastPostDate.toDate()).inHours >= 36) {
         // Reset streak count if more than 48 hours have passed

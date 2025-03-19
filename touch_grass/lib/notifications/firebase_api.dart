@@ -2,11 +2,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-Future<void> handleBackgroundMessage(RemoteMessage message) async {
-  print("Title: ${message.notification?.title}");
-  print("Body: ${message.notification?.body}");
-  print("Payload: ${message.data}");
-}
 
 bool hasPostedToday(DateTime lastPostDate) {
   final now = DateTime.now();
@@ -41,14 +36,12 @@ class FirebaseApi {
             'body': 'Don\'t forget to post a photo today!',
           },
         );
-        print('Notification sent to user: ${user['uid']}');
       }
     }
   }
 
   Future<void> initNotifications() async {
     await _firebaseMessaging.requestPermission();
-    print('Notification permission granted');
     final token = await _firebaseMessaging.getToken();
     print('Firebase token: $token');
 
@@ -58,7 +51,6 @@ class FirebaseApi {
         await _firestore.collection('users').doc(user.uid).update({
           'fcmToken': token,
         });
-        print('FCM token stored in Firestore');
       }
     }
   }

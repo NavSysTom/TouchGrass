@@ -21,7 +21,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.touch_grass"
-        minSdkVersion = 23
+        minSdkVersion = 21
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -55,7 +55,3 @@ dependencies {
 flutter {
     source = "../.."
 }
-
-
-apply plugin: 'com.android.application'
-apply plugin: 'com.google.gms.google-services'

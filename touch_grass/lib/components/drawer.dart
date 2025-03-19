@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
 import 'package:touch_grass/authenticate/home/pages/home_page.dart';
+import 'package:touch_grass/authenticate/home/pages/journey_page.dart';
 import 'package:touch_grass/authenticate/home/pages/profile_page.dart';
 import 'package:touch_grass/authenticate/home/pages/search_page.dart';
 import 'package:touch_grass/components/drawer_tile.dart';
@@ -65,6 +66,15 @@ class MyDrawer extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const SearchPage()),
                 ),
               ),
+              _buildDrawerTile(
+                context,
+                title: 'Journey',
+                icon: Icons.map,
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const JourneyPage()),
+                ),
+              ),
               const Spacer(),
               _buildDrawerTile(
                 context,
@@ -72,6 +82,7 @@ class MyDrawer extends StatelessWidget {
                 icon: Icons.logout,
                 onTap: () => context.read<AuthCubit>().signOut(),
               ),
+              
             ],
           ),
         ),

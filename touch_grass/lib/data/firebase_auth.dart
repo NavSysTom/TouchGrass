@@ -60,17 +60,11 @@ class FirebaseAuthRepo  implements AuthServiceRepo{
   Future<AppUser?> getCurrentUser() async {
     final firebaseUser = firebaseAuth.currentUser;
 
-    DocumentSnapshot userDoc = await firestore.collection("users").doc(firebaseUser!.uid).get();
-
-    if (!userDoc.exists) {
+    if (firebaseUser == null) {
       return null;
-    } else {
-      return AppUser(
-        uid: firebaseUser.uid,
-        email: firebaseUser.email!,
-        name: userDoc['name'],
-      );
-    }   
-  }
+    }
 
-}
+    DocumentSnapshot userDoc = await firestore.collection("users").doc(firebaseUser.uid).get();
+    return AppUser(uid: firebaseUser.uid, email: firebaseUser.email ?? '', name: userDoc['name']);
+  }
+}  
