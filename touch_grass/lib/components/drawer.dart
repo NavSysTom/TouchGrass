@@ -9,6 +9,7 @@ import 'package:touch_grass/authenticate/home/pages/search_page.dart';
 import 'package:touch_grass/components/drawer_tile.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/components/profile_user.dart';
+import 'package:touch_grass/screens/register_page.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -19,6 +20,18 @@ class MyDrawer extends StatelessWidget {
     final profileCubit = context.read<ProfileCubit>();
     final currentUser = authCubit.currentUser;
 
+    // Handle case where currentUser is null
+    if (currentUser == null) {
+      // Redirect to RegisterPage if user is not logged in
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Register(togglePages: () {})),
+        );
+      });
+      return const SizedBox(); 
+    }
+
     return Drawer(
       backgroundColor: const Color(0xFFbfd37a),
       child: SafeArea(
@@ -26,7 +39,7 @@ class MyDrawer extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Column(
             children: [
-              _buildProfileHeader(context, profileCubit, currentUser!.uid),
+              _buildProfileHeader(context, profileCubit, currentUser.uid),
               const SizedBox(height: 10),
               _buildDrawerTile(
                 context,
@@ -80,9 +93,11 @@ class MyDrawer extends StatelessWidget {
                 context,
                 title: 'Logout',
                 icon: Icons.logout,
-                onTap: () => context.read<AuthCubit>().signOut(),
+                onTap: () {
+                  // Sign out the user
+                  context.read<AuthCubit>().signOut();
+                },
               ),
-              
             ],
           ),
         ),
@@ -99,11 +114,6 @@ class MyDrawer extends StatelessWidget {
         } else if (snapshot.hasData) {
           final user = snapshot.data!;
           final profileImageUrl = user.profileImageUrl;
-          if (profileImageUrl.isEmpty) {
-            print('Profile image URL is empty or null');
-          } else {
-            print('Profile image URL: $profileImageUrl'); 
-          }
           return Column(
             children: [
               ClipOval(
@@ -112,10 +122,8 @@ class MyDrawer extends StatelessWidget {
                         imageUrl: profileImageUrl,
                         placeholder: (context, url) =>
                             const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) {
-                          print('Error loading image: $url'); 
-                          return const Icon(Icons.person);
-                        },
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person),
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
@@ -133,7 +141,6 @@ class MyDrawer extends StatelessWidget {
             ],
           );
         } else {
-          print('Error loading profile image'); 
           return const Icon(
             Icons.person,
             size: 100.0,
