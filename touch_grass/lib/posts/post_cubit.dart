@@ -16,48 +16,54 @@ class PostCubit extends Cubit<PostState> {
     required this.storageRepo,
   }) : super(PostsInitial());
 
-  Future<void> createPost(Post post, {String? imageMobilePath, Uint8List? imageWebBytes}) async {
-    String? imageUrl;
+Future<void> createPost(Post post, {String? imageMobilePath, Uint8List? imageWebBytes}) async {
+  String? imageUrl;
 
-    try {
-      emit(PostsUploading());
+  try {
+    emit(PostsUploading());
 
-      if (imageMobilePath != null) {
-        imageUrl = await storageRepo.uploadPostImage(imageMobilePath, post.id);
-      } else if (imageWebBytes != null) {
-        imageUrl = await storageRepo.uploadPostImageWeb(imageWebBytes, post.id);
-      }
-
-      final newPost = post.copyWith(imageUrl: imageUrl);
-      await postCollection.doc(newPost.id).set(newPost.toJson());
-
-      // Handle streak count
-      final userId = post.userId;
-      final streakCount = await _getStreakCount(userId);
-      final lastPostDate = await _getLastPostDate(userId);
-      final now = DateTime.now();
-      final usersCollection = firestore.collection('users');
-      await usersCollection.doc(userId).set({
-        'hasPostedToday': true,
-      });
-
-      if (lastPostDate == null || now.difference(lastPostDate.toDate()).inHours >= 36) {
-        // Reset streak count if more than 48 hours have passed
-        await _updateStreakCount(userId, 1);
-      } else if (now.difference(lastPostDate.toDate()).inHours >= 24) {
-        // Increment streak count if more than 24 hours have passed
-        await _updateStreakCount(userId, streakCount + 1);
-      } else {
-        // Keep the same streak count if less than 24 hours have passed
-        await _updateStreakCount(userId, streakCount);
-      }
-
-      final posts = await _fetchAllPosts();
-      emit(PostsLoaded(posts));
-    } catch (e) {
-      emit(PostsError("Failed to create post: $e"));
+    // Upload the image
+    if (imageMobilePath != null) {
+      imageUrl = await storageRepo.uploadPostImage(imageMobilePath, post.id);
+    } else if (imageWebBytes != null) {
+      imageUrl = await storageRepo.uploadPostImageWeb(imageWebBytes, post.id);
     }
+
+    // Create a new post with the uploaded image URL
+    final newPost = post.copyWith(imageUrl: imageUrl);
+    await postCollection.doc(newPost.id).set(newPost.toJson());
+
+    // Handle streak count
+    final userId = post.userId;
+    final streakCount = await _getStreakCount(userId);
+    final lastPostDate = await _getLastPostDate(userId);
+    final now = DateTime.now();
+    final usersCollection = firestore.collection('users');
+
+    // Update the user's document without overwriting it
+    await usersCollection.doc(userId).set({
+      'hasPostedToday': true,
+      'lastPostTime': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true)); // Use merge to avoid overwriting the document
+
+    if (lastPostDate == null || now.difference(lastPostDate.toDate()).inHours >= 36) {
+      // Reset streak count if more than 36 hours have passed
+      await _updateStreakCount(userId, 1);
+    } else if (now.difference(lastPostDate.toDate()).inHours >= 24) {
+      // Increment streak count if more than 24 hours have passed
+      await _updateStreakCount(userId, streakCount + 1);
+    } else {
+      // Keep the same streak count if less than 24 hours have passed
+      await _updateStreakCount(userId, streakCount);
+    }
+
+    // Fetch all posts and emit the updated state
+    final posts = await _fetchAllPosts();
+    emit(PostsLoaded(posts));
+  } catch (e) {
+    emit(PostsError("Failed to create post: $e"));
   }
+}
 
   Future<void> fetchAllPosts() async {
     try {

@@ -43,10 +43,32 @@ void initState() {
   });
 }
 
-  void getCurrentUser() async {
-    final authCubit = context.read<AuthCubit>();
-    currentUser = authCubit.currentUser;
+void getCurrentUser() async {
+  final authCubit = context.read<AuthCubit>();
+  final userId = authCubit.currentUser?.uid;
+
+  if (userId == null) {
+    print('No user is currently logged in.');
+    return;
   }
+
+  try {
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+    if (userDoc.exists) {
+      currentUser = AppUser(
+        uid: userId,
+        name: userDoc['name'], // Safely access the 'name' field
+        email: userDoc['email'], // Add other fields as needed
+      );
+    } else {
+      print('User document does not exist.');
+      Navigator.popAndPushNamed(context, '/login');
+    }
+  } catch (e) {
+    print('Error fetching user document: $e');
+  }
+}
 
   Future<void> pickImage({bool fromCamera = false}) async {
     if (fromCamera) {
@@ -130,9 +152,9 @@ void uploadPost() async {
     final userId = currentUser!.uid;
     final userDoc = FirebaseFirestore.instance.collection('users').doc(userId);
 
-    await userDoc.set({
+    await userDoc.update({
       'lastPostTime': FieldValue.serverTimestamp(), // Update last post time
-    }, SetOptions(merge: true));
+    },);
 
     if (!mounted) return; // Ensure context is still valid
     ScaffoldMessenger.of(context).showSnackBar(
