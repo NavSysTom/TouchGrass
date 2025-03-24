@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/data/firebase_auth.dart';
 import 'package:touch_grass/data/firebase_profile.dart';
-import 'package:touch_grass/posts/firebase_post_repo.dart';
 import 'package:touch_grass/posts/post_cubit.dart';
 import 'package:touch_grass/screens/auth_page.dart';
 import 'package:touch_grass/search/firebase_search_repo.dart';
@@ -23,7 +22,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileRepo = FirebaseProfileRepo();
     final storageRepo = FirebaseStorageRepo();
-    // Removed unused variable
     final searchRepo = FirebaseSearchRepo();
 
     return MultiBlocProvider(
