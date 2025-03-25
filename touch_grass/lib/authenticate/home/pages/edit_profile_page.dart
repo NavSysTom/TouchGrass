@@ -89,14 +89,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget buildEditPage() {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: const Color(0xFFbfd37a),
-        centerTitle: true,
-      ),
-      body: Padding(
+Widget buildEditPage() {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Edit Profile'),
+      backgroundColor: const Color(0xFFbfd37a),
+      centerTitle: true,
+    ),
+    resizeToAvoidBottomInset: true,
+    body: SingleChildScrollView(
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -160,8 +162,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   contentPadding: const EdgeInsets.symmetric(
                       vertical: 20.0, horizontal: 10.0),
                 ),
-                maxLines: null,
-                textAlign: TextAlign.center,
+                maxLines: null, 
+                keyboardType: TextInputType.multiline, 
+                textAlign: TextAlign.start, 
               ),
             ),
             const SizedBox(height: 100.0),
@@ -173,6 +176,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+ }
 }

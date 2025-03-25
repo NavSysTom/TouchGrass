@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
-import 'package:touch_grass/authenticate/home/pages/profile_page.dart';
 import 'package:touch_grass/authenticate/profile_cubit.dart';
 import 'package:touch_grass/comments/comment.dart';
 import 'package:touch_grass/components/profile_user.dart';
@@ -52,6 +51,12 @@ class _PostTileState extends State<PostTile> {
       });
     }
   }
+  void deleteComment(Comment comment) {
+  setState(() {
+    widget.post.comments.remove(comment);
+  });
+  postCubit.deleteComment(widget.post.id, comment.id); 
+}
 
   void showOptions() {
     showDialog(
@@ -73,7 +78,7 @@ class _PostTileState extends State<PostTile> {
             ));
   }
 
-  // Comments
+
   final commentTextController = TextEditingController();
 
   void openNewCommentBox() {
@@ -120,85 +125,156 @@ class _PostTileState extends State<PostTile> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xFFE8F5E9),
-      child: Column(
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        ProfilePage(uid: widget.post.userId))),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  postUser?.profileImageUrl != null
-                      ? CachedNetworkImage(
-                          imageUrl: postUser!.profileImageUrl,
-                          placeholder: (context, url) =>
-                              const CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.person),
-                          imageBuilder: (context, imageProvider) => Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+@override
+Widget build(BuildContext context) {
+  return Container(
+    color: const Color(0xFFE8F5E9), 
+    child: Column(
+      children: [
+        Container(
+          color: const Color(0xFFbfd37a), 
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              postUser?.profileImageUrl != null
+                  ? CachedNetworkImage(
+                      imageUrl: postUser!.profileImageUrl,
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.person),
+                      imageBuilder: (context, imageProvider) => Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
                           ),
-                        )
-                      : const Icon(Icons.person),
-                  const SizedBox(width: 10),
-                  Text(widget.post.username),
-                  const Spacer(),
-                  if (isOwnPost)
-                    GestureDetector(
-                        onTap: showOptions,
-                        child: const Icon(Icons.more_horiz))
-                ],
+                        ),
+                      ),
+                    )
+                  : const Icon(Icons.person),
+              const SizedBox(width: 10),
+              Text(
+                widget.post.username,
+                style: const TextStyle(
+                  color: Colors.white, 
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
+              const Spacer(),
+              if (isOwnPost)
+                GestureDetector(
+                    onTap: showOptions,
+                    child: const Icon(Icons.more_horiz, color: Colors.white)),
+            ],
           ),
-          CachedNetworkImage(
+        ),
+
+        Container(
+          color: Colors.white, 
+          child: CachedNetworkImage(
             imageUrl: widget.post.imageUrl,
             height: 430,
             width: double.infinity,
-            fit: BoxFit.contain, // Ensures the full image is visible
+            fit: BoxFit.contain, 
             placeholder: (context, url) => const SizedBox(height: 430),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
-          Row(
+        ),
+
+      
+      Container(
+  color: const Color(0xFFbfd37a), 
+  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+  child: Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(
+        child: Text.rich(
+          TextSpan(
             children: [
-              GestureDetector(
-                  onTap: openNewCommentBox, child: const Icon(Icons.comment)),
-              Text(widget.post.comments.length.toString()),
+              TextSpan(
+                text: widget.post.username,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const TextSpan(
+                text: ": ",
+                style: TextStyle(color: Colors.white),
+              ),
+              TextSpan(
+                text: widget.post.text,
+                style: const TextStyle(color: Colors.white),
+              ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 5),
-            child: Row(
-              children: [
-                Text(
-                  widget.post.username,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(":"),
-                const SizedBox(width: 5),
-                Text(widget.post.text),
-              ],
-            ),
+          softWrap: true, 
+          overflow: TextOverflow.visible,
+        ),
+      ),
+
+      Row(
+        children: [
+          GestureDetector(
+            onTap: openNewCommentBox,
+            child: const Icon(Icons.comment, color: Colors.white),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            widget.post.comments.length.toString(),
+            style: const TextStyle(color: Colors.white),
           ),
         ],
       ),
-    );
-  }
+    ],
+  ),
+),
+
+if (widget.post.comments.isNotEmpty)
+  Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: widget.post.comments.map((comment) {
+      final isMyComment = comment.userId == currentUser?.uid; 
+      return Container(
+        width: double.infinity, 
+        color: const Color(0xFFbfd37a),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                '${comment.username}: "${comment.text}"',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.0,
+                ),
+                softWrap: true,
+                overflow: TextOverflow.visible, 
+              ),
+            ),
+            if (isMyComment)
+              GestureDetector(
+                onTap: () => showOptions(),
+                child: const Icon(
+                  Icons.more_horiz,
+                  color: Colors.white,
+                  size: 20.0,
+                ),
+              ),
+          ],
+        ),
+      );
+    }).toList(),
+  ),
+      ],
+    ),
+  );
+}
 }
