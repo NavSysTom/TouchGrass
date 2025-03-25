@@ -55,10 +55,11 @@ class Streak {
     }
   }
 
-  // Method to update streak count in Firebase
-  static Future<void> updateStreakCount(String userId, int streakCount) async {
-    await FirebaseFirestore.instance.collection('streaks').doc(userId).set({
-      'streakCount': streakCount,
-    }, SetOptions(merge: true));
-  }
+// Method to update streak count in Firebase
+static Future<void> updateStreakCount(String userId, int streakCount) async {
+  await FirebaseFirestore.instance.collection('streaks').doc(userId).set({
+    'streakCount': streakCount,
+    'timestamp': Timestamp.now(), // Update the last post timestamp
+  }, SetOptions(merge: true));
+ }
 }

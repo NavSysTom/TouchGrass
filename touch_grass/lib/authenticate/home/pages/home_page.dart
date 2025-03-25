@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: const MyDrawer(),
-      body: BlocBuilder<PostCubit, PostState>(
+        body: BlocBuilder<PostCubit, PostState>(
         builder: (context, state) {
           if (state is PostsLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -143,14 +143,19 @@ class _HomePageState extends State<HomePage> {
               return const Center(child: Text("No posts available"));
             }
 
-            return ListView.builder(
-              itemCount: allPosts.length,
-              itemBuilder: (context, index) {
-                final post = allPosts[index];
+  return ListView.separated(
+    itemCount: allPosts.length,
+    itemBuilder: (context, index) {
+      final post = allPosts[index];
 
-                return PostTile(post: post, onDeletePressed: () => deletePost(post.id));
-              },
-            );
+      return PostTile(post: post, onDeletePressed: () => deletePost(post.id));
+    },
+    separatorBuilder: (context, index) => const Divider(
+      color: Colors.grey, 
+      thickness: 2, 
+      height: 2, 
+    ),
+  );
           } else if (state is PostsError) {
             return Center(child: Text(state.message));
           } else {

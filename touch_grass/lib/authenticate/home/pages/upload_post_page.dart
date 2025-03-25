@@ -32,15 +32,6 @@ class _UploadPostPageState extends State<UploadPostPage> {
 void initState() {
   super.initState();
   getCurrentUser();
-
-  // Check if the user has posted recently
-  hasPostedRecently().then((postedRecently) {
-    if (!postedRecently) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Don’t forget to post to keep your streak alive!')),
-      );
-    }
-  });
 }
 
 void getCurrentUser() async {
@@ -219,60 +210,90 @@ void uploadPost() async {
 Widget buildUploadPage() {
   return Scaffold(
     appBar: AppBar(
-      title: const Text('Upload Post'),
+      title: const Text(
+        'Upload Post',
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
       backgroundColor: const Color(0xFFbfd37a),
     ),
-    body: Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          TextField(
-            controller: textController,
-            decoration: const InputDecoration(hintText: 'Write a caption...'),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: () => pickImage(fromCamera: false),
-                child: const Text('Pick Image from Gallery'),
+    resizeToAvoidBottomInset: true, // Ensures the layout adjusts when the keyboard appears
+    body: SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                hintText: 'Write a caption...',
+                hintStyle: const TextStyle(fontSize: 16, fontStyle: FontStyle.italic),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               ),
-              ElevatedButton(
-                onPressed: () => pickImage(fromCamera: true),
-                child: const Text('Take Photo'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          if (imagePickedFile != null)
-            Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white, // Background color for the container
-                border: Border.all(color: Colors.grey, width: 2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: kIsWeb
-                    ? Image.memory(
-                        webImage!,
-                        fit: BoxFit.contain, // Ensures the full image is visible
-                      )
-                    : Image.file(
-                        File(imagePickedFile!.path!),
-                        fit: BoxFit.contain, // Ensures the full image is visible
-                      ),
-              ),
+              maxLines: null, // Allows the text to expand vertically
+              keyboardType: TextInputType.multiline, // Enables multiline input
             ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: ElevatedButton(
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () => pickImage(fromCamera: true),
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Take Photo'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueAccent,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () => pickImage(fromCamera: false),
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Pick Image'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (imagePickedFile != null)
+              Container(
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white, // Background color for the container
+                  border: Border.all(color: Colors.grey, width: 2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: kIsWeb
+                      ? Image.memory(
+                          webImage!,
+                          fit: BoxFit.contain, // Ensures the full image is visible
+                        )
+                      : Image.file(
+                          File(imagePickedFile!.path!),
+                          fit: BoxFit.contain, // Ensures the full image is visible
+                        ),
+                ),
+              ),
+            const SizedBox(height: 20),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 3, // Adjusts the height of the buttons
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                ElevatedButton(
                   onPressed: () => setState(() => selectedCategory = 'flowers'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedCategory == 'flowers'
@@ -281,14 +302,11 @@ Widget buildUploadPage() {
                   ),
                   child: const Text(
                     'Flowers',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
+                ElevatedButton(
                   onPressed: () => setState(() => selectedCategory = 'bugs'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedCategory == 'bugs'
@@ -297,14 +315,11 @@ Widget buildUploadPage() {
                   ),
                   child: const Text(
                     'Bugs',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
+                ElevatedButton(
                   onPressed: () => setState(() => selectedCategory = 'animals'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedCategory == 'animals'
@@ -313,14 +328,11 @@ Widget buildUploadPage() {
                   ),
                   child: const Text(
                     'Animals',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
+                ElevatedButton(
                   onPressed: () => setState(() => selectedCategory = 'wildscape'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: selectedCategory == 'wildscape'
@@ -329,21 +341,34 @@ Widget buildUploadPage() {
                   ),
                   child: const Text(
                     'Wildscape',
-                    style: TextStyle(fontSize: 8),
+                    style: TextStyle(fontSize: 12),
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    ),
+    bottomNavigationBar: Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: ElevatedButton(
+        onPressed: uploadPost,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: uploadPost,
-            child: const Text('Upload Post'),
-          ),
-        ],
+        ),
+        child: const Text(
+          'Upload Post',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
       ),
     ),
   );
- }
+}
 }
