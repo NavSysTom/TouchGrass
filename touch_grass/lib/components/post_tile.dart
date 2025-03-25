@@ -78,7 +78,7 @@ class _PostTileState extends State<PostTile> {
             ));
   }
 
-  // Comments
+
   final commentTextController = TextEditingController();
 
   void openNewCommentBox() {

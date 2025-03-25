@@ -49,8 +49,8 @@ void getCurrentUser() async {
     if (userDoc.exists) {
       currentUser = AppUser(
         uid: userId,
-        name: userDoc['name'], // Safely access the 'name' field
-        email: userDoc['email'], // Add other fields as needed
+        name: userDoc['name'], 
+        email: userDoc['email'], 
       );
     } else {
       print('User document does not exist.');
