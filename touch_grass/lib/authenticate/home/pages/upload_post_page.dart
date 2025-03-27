@@ -54,6 +54,7 @@ void getCurrentUser() async {
       );
     } else {
       print('User document does not exist.');
+      authCubit.emitUnauthenticated();
       Navigator.popAndPushNamed(context, '/login');
     }
   } catch (e) {
@@ -145,6 +146,7 @@ void uploadPost() async {
 
     await userDoc.update({
       'lastPostTime': FieldValue.serverTimestamp(), // Update last post time
+      'hasPostedToday': true,
     },);
 
     if (!mounted) return; // Ensure context is still valid
@@ -217,7 +219,7 @@ Widget buildUploadPage() {
       centerTitle: true,
       backgroundColor: const Color(0xFFbfd37a),
     ),
-    resizeToAvoidBottomInset: true, // Ensures the layout adjusts when the keyboard appears
+    resizeToAvoidBottomInset: true, 
     body: SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -234,8 +236,8 @@ Widget buildUploadPage() {
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
               ),
-              maxLines: null, // Allows the text to expand vertically
-              keyboardType: TextInputType.multiline, // Enables multiline input
+              maxLines: null,
+              keyboardType: TextInputType.multiline, 
             ),
             const SizedBox(height: 20),
             Row(
@@ -290,7 +292,7 @@ Widget buildUploadPage() {
               shrinkWrap: true,
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
-              childAspectRatio: 3, // Adjusts the height of the buttons
+              childAspectRatio: 3, 
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 ElevatedButton(
