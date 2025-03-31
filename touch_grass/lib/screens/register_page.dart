@@ -1,5 +1,6 @@
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:touch_grass/authenticate/auth_cubit.dart';
+import 'package:touch_grass/authenticate/auth_states.dart';
 import 'package:touch_grass/components/button.dart';
 import 'package:touch_grass/components/textfield.dart';
 import 'package:flutter/material.dart';
@@ -61,92 +62,105 @@ class _RegisterState extends State<Register> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFbfd37a),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: 10.0,
-              right: 10.0,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Welcome to Touch Grass!',
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.bold,
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: const Color(0xFFbfd37a),
+    body: SafeArea(
+      child: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthError) {
+            // Show error message as a SnackBar
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: 10.0,
+                right: 10.0,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Welcome to Touch Grass!',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const Text(
-                  'Create an account.',
-                  style: TextStyle(
-                    fontSize: 32.0,
-                    fontWeight: FontWeight.bold,
+                  const Text(
+                    'Create an account.',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 150.0),
-                //email input
-                MyTextfield(
-                  controller: nameController,
-                  hintText: 'Name',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10.0),
-                MyTextfield(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-                const SizedBox(height: 10.0),
-                //password textfield
-                MyTextfield(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 10.0),
-                //confirm password textfield
-                MyTextfield(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                ),
-                const SizedBox(height: 30.0),
-                //Register button
-                MyButton(
-                  onTap: register,
-                  text: 'Register',
-                  height: 40, 
-                  width: 150,
-                ),
-                const SizedBox(height: 10.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Already a member? '),
-                    GestureDetector(
-                      onTap: widget.togglePages,
-                      child: const Text(
-                        'Login now',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue, 
+                  const SizedBox(height: 150.0),
+                  MyTextfield(
+                    controller: nameController,
+                    hintText: 'Name',
+                    obscureText: false,
+                  ),
+                  const SizedBox(height: 10.0),
+                  MyTextfield(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+                  const SizedBox(height: 10.0),
+                  MyTextfield(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 10.0),
+                  MyTextfield(
+                    controller: confirmPasswordController,
+                    hintText: 'Confirm Password',
+                    obscureText: true,
+                  ),
+                  const SizedBox(height: 30.0),
+                  MyButton(
+                    onTap: register,
+                    text: 'Register',
+                    height: 40,
+                    width: 150,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text('Already a member? '),
+                      GestureDetector(
+                        onTap: widget.togglePages,
+                        child: const Text(
+                          'Login now',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+ }
 }
