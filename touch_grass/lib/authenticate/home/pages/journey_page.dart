@@ -29,7 +29,7 @@ class _JourneyPageState extends State<JourneyPage> {
     super.initState();
     fetchDailyQuestion();
     checkIfAnsweredToday();
-    fetchPoints(); // Fetch the user's points
+    fetchPoints(); 
   }
 
   @override

@@ -17,51 +17,60 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   // Check if user is authenticated
-  void checkAuth() async {
+void checkAuth() async {
+  emit(AuthLoading()); // Emit loading state while checking authentication
+  try {
     final AppUser? user = await authRepo.getCurrentUser();
 
     if (user != null) {
       _currentUser = user;
-      emit(Authenticated(user));
+      emit(Authenticated(user)); // Emit authenticated state if user exists
     } else {
-      emit(UnAuthenticated());
+      emit(AuthError("User is not authenticated. Please log in.")); // Emit error state if user is null
     }
+  } catch (e) {
+    emit(AuthError("Failed to check authentication: ${e.toString()}")); // Emit error state for exceptions
   }
+}
 
   // Get current user
   AppUser? get currentUser => _currentUser;
 
   // Login with email and password
-  Future<void> login(String email, String password) async {
-    emit(AuthLoading());
-    try {
-      final user = await authRepo.loginwithEmailPassword(email, password);
-      if (user != null) {
-        _currentUser = user;
-        emit(Authenticated(user));
-      } else {
-        emit(UnAuthenticated());
-      }
-    } catch (e) {
-      emit(AuthError(e.toString()));
+Future<void> login(String email, String password) async {
+  emit(AuthLoading());
+  try {
+    final user = await authRepo.loginwithEmailPassword(email, password);
+    if (user != null) {
+      _currentUser = user;
+      emit(Authenticated(user));
+    } else {
+      emit(AuthError("Invalid credentials. Please try again."));
+      emit(UnAuthenticated()); // Ensure UI is reset properly
     }
+  } catch (e) {
+    emit(AuthError("Login failed: ${e.toString()}"));
+    emit(UnAuthenticated()); // Reset after error
   }
+}
 
   // Register with email and password
-  Future<void> register(String name, String email, String password) async {
-    emit(AuthLoading());
-    try {
-      final user = await authRepo.registerwithEmailPassword(name, email, password);
-      if (user != null) {
-        _currentUser = user;
-        emit(Authenticated(user));
-      } else {
-        emit(UnAuthenticated());
-      }
-    } catch (e) {
-      emit(AuthError(e.toString()));
+Future<void> register(String name, String email, String password) async {
+  emit(AuthLoading());
+  try {
+    final user = await authRepo.registerwithEmailPassword(name, email, password);
+    if (user != null) {
+      _currentUser = user;
+      emit(Authenticated(user));
+    } else {
+      emit(AuthError("Registration failed. Please try again."));
+      emit(UnAuthenticated()); // Ensure UI is reset properly
     }
+  } catch (e) {
+    emit(AuthError("Registration failed: ${e.toString()}"));
+    emit(UnAuthenticated()); // Reset after error
   }
+}
 
   // Sign out
   Future<void> signOut() async {
@@ -70,16 +79,17 @@ class AuthCubit extends Cubit<AuthState> {
     emit(UnAuthenticated());
   }
 
-  // Monitor Firebase Authentication state
-  void _monitorAuthState() {
-    _firebaseAuth.authStateChanges().listen((user) {
-      if (user == null) {
-        emit(UnAuthenticated());
-      } else {
-        _checkUserDocument(user.uid);
-      }
-    });
-  }
+// Monitor Firebase Authentication state
+void _monitorAuthState() {
+  _firebaseAuth.authStateChanges().listen((user) {
+    if (user == null && state is! AuthError && state is! AuthLoading) {
+      // Emit UnAuthenticated only if the current state is not an error or loading
+      emit(UnAuthenticated());
+    } else if (user != null) {
+      _checkUserDocument(user.uid);
+    }
+  });
+}
 
   // Check if Firestore user document exists
   Future<void> _checkUserDocument(String userId) async {
