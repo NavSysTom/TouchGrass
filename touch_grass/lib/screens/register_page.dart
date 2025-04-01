@@ -92,6 +92,7 @@ Widget build(BuildContext context) {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const SizedBox(height: 50),
                   const Text(
                     'Welcome to Touch Grass!',
                     style: TextStyle(

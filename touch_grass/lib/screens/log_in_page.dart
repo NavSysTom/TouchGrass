@@ -76,6 +76,7 @@ class _LogInPageState extends State<LogInPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    const SizedBox(height: 50.0),
                     const Text(
                       'Touch Grass',
                       style: TextStyle(

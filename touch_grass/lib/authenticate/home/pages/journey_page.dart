@@ -262,24 +262,26 @@ class _JourneyPageState extends State<JourneyPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Personal Journey"),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFbfd37a),
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                const SizedBox(height: 10),
-                buildCategorySelector(), // Add the category selector
-                Expanded(
-                  child: hasAnsweredToday
-                      ? Center(
-                          child: Column(
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text("Personal Journey"),
+      centerTitle: true,
+      backgroundColor: const Color(0xFFbfd37a),
+    ),
+    body: isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  buildCategorySelector(), // Add the category selector
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: hasAnsweredToday
+                        ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text(
@@ -292,11 +294,8 @@ class _JourneyPageState extends State<JourneyPage> {
                                 style: const TextStyle(fontSize: 16),
                               ),
                             ],
-                          ),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
+                          )
+                        : Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Container(
@@ -333,11 +332,12 @@ class _JourneyPageState extends State<JourneyPage> {
                               ),
                             ],
                           ),
-                        ),
-                ),
-                buildPointsProgressBar(), // Add points progress bar at the bottom
-              ],
+                  ),
+                  buildPointsProgressBar(), // Add points progress bar at the bottom
+                ],
+              ),
             ),
-    );
-  }
+          ),
+  );
+}
 }
