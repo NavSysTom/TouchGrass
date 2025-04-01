@@ -78,6 +78,26 @@ class _PostTileState extends State<PostTile> {
             ));
   }
 
+  void showCommentOptions(Comment comment) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text("Delete Comment?"),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                    onPressed: () {
+                      deleteComment(comment);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Delete")),
+              ],
+            ));
+  }
+
 
   final commentTextController = TextEditingController();
 
@@ -250,7 +270,7 @@ if (widget.post.comments.isNotEmpty)
           children: [
             Expanded(
               child: Text(
-                '${comment.username}: "${comment.text}"',
+                '${comment.username}: ${comment.text}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14.0,
@@ -261,7 +281,7 @@ if (widget.post.comments.isNotEmpty)
             ),
             if (isMyComment)
               GestureDetector(
-                onTap: () => showOptions(),
+                onTap: () => showCommentOptions(comment),
                 child: const Icon(
                   Icons.more_horiz,
                   color: Colors.white,
