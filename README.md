@@ -29,7 +29,7 @@ To run the project locally, follow these steps:
 
 1. Clone this repository:
    ```bash
-    git clone https://github.com/yourusername/nature-explorer.git
+    git clone https://github.com/NavSysTom/TouchGrass
    ```
    
 2. Navigate into the project directory:
